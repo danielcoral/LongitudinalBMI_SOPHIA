@@ -1,0 +1,18 @@
+# Submission file
+projdir    = /ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA
+scriptnm   = 01_GAMRec_Boot
+
+executable = /ludc/Home/daniel_c/miniforge3/bin/conda
+arguments  = run --name RLang --no-capture-output Rscript --vanilla $(projdir)/scripts/04_Sensitivity/$(scriptnm).sh
+
+log        = $(projdir)/logfiles/$(scriptnm).log
+output     = $(projdir)/logfiles/$(scriptnm).out
+error      = $(projdir)/logfiles/$(scriptnm).err
+
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+
+request_memory = 64G
+request_cpus = 4
+
+queue 1
