@@ -92,35 +92,6 @@ slopedxregdf <- bmrec |>
     Dat = map2(indiv_est, Dat, inner_join, by = "eid")
   )
 
-sumoutdat <-slopedxregdf |>
-  transmute(
-    sex, outcome,
-    km_est = map(
-      Dat,
-      ~{
-        sums <- survfit(Surv(time, event) ~ 1, data = .x) |>
-          summary(times = 10)
-        tibble(
-          estimate = sums$surv,
-          conf.low = sums$lower,
-          conf.high = sums$upper
-        ) |>
-          mutate(
-            across(everything(), ~ 100 * (1 - .x)),
-            n_events = sum(.x$event),
-            n_py = sum(.x$time),
-            inc_rate = 100000 * (n_events / n_py)
-          )
-      }
-    )
-  ) |>
-  unnest(km_est)
-
-write_tsv(
-  sumoutdat,
-  file.path(projfld, "data", "UKB", "results", "sumoutdat.tsv")
-)
-
 slopedxregdf <- slopedxregdf |>
   mutate(
     survcox_slopeonly = map(
