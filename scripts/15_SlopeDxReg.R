@@ -92,7 +92,7 @@ slopedxregdf <- bmrec |>
     Dat = map2(indiv_est, Dat, inner_join, by = "eid")
   )
 
-slopedxregdf |>
+sumoutdat <-slopedxregdf |>
   transmute(
     sex, outcome,
     km_est = map(
@@ -115,6 +115,11 @@ slopedxregdf |>
     )
   ) |>
   unnest(km_est)
+
+write_tsv(
+  sumoutdat,
+  file.path(projfld, "data", "UKB", "results", "sumoutdat.tsv")
+)
 
 slopedxregdf <- slopedxregdf |>
   mutate(
