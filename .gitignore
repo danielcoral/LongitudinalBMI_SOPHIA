@@ -1,0 +1,16 @@
+.gitignore
+data/
+logfiles/
+html/
+plots/
+subfiles/
+paper/
+presentations/
+.nanocoder/
+coverletter/
+trash/
+AGENTS.md
+TODO.md
+Rplots.pdf
+tests/
+STRUCTURE.md
