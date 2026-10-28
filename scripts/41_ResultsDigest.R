@@ -1,5 +1,5 @@
 # Results digest for the life-stage restructure: key numbers and the status of
-# each planned claim (C1 to C9), computed from the outputs of scripts 37-41.
+# each planned claim (C1 to C9), computed from the outputs of scripts 36-40.
 # Inputs: within_cohort_contrasts.csv, slope_support_summary.csv and
 #   stable_consistency_ukb_rs.csv in data/cross_cohort/;
 #   liver_fat_quartile_contrasts.csv, liver_fat_whr_profile_contrasts.csv,
@@ -90,7 +90,7 @@ others_ok <- all(
 )
 # C9: same-sign agreement between UK Biobank and Rotterdam.
 wording <- agreement |>
-  filter(bmi == "all", subset == "all_pairs") |>
+  filter(subset == "all_pairs") |>
   mutate(
     verdict = case_when(
       share_same_sign >= 0.8 ~ "consistently",
@@ -100,7 +100,7 @@ wording <- agreement |>
   )
 
 digest <- capture.output({
-  cat("RESULTS DIGEST (scripts 37-41); contrasts are upper minus lower",
+  cat("RESULTS DIGEST (scripts 36-40); contrasts are upper minus lower",
       "quartile of slope, in SD units unless stated\n")
   cat("\n[S] Slope distribution (kg/m2/year)\n")
   print(as.data.frame(slopes), row.names = FALSE)

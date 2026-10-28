@@ -61,7 +61,7 @@ fits <- tests <- diagnostics <- profiles <- predictions <- list()
 slope_contrasts <- profile_contrasts <- differences <- list()
 for (i in seq_len(nrow(original))) {
   sex_value <- original$sex[i]
-  # Slope quartiles of the full liver-MRI sample, as in script 39.
+  # Slope quartiles of the full liver-MRI sample, as in script 38.
   pair <- as.numeric(quantile(original$bmdf[[i]]$Slope, c(0.25, 0.75)))
   slope_median <- median(original$bmdf[[i]]$Slope)
   dat <- inner_join(original$bmdf[[i]], waist_hip, by = "eid")

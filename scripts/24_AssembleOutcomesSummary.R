@@ -1,4 +1,4 @@
-# Figure 6: incident outcomes by recent BMI slope and the Diabetes Prevention
+# Figure 5: incident outcomes by recent BMI slope and the Diabetes Prevention
 # Program (DPP) benchmark.
 # A: marginal outcomes; B: outcomes adjusted for age and BMI; C: DPP.
 # Inputs: three saved ggplot objects (plot_marginal_outcomes.rds,

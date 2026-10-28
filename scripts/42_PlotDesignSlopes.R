@@ -1,7 +1,7 @@
 # Figure 1: the life-stage windows of the three cohorts and the distribution
 # of the 5-year BMI slope in each. The thick bar is the interquartile range:
 # its ends are the lower and upper quartile used for the contrasts.
-# Input: data/cross_cohort/slope_support_summary.csv (script 38).
+# Input: data/cross_cohort/slope_support_summary.csv (script 37).
 # Output figure: plots/design_slope_distributions.png
 library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)

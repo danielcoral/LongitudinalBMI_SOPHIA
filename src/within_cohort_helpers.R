@@ -54,7 +54,7 @@ cohort_models <- function(result_table) {
     dplyr::mutate(trait = harmonize_trait(trait)) |>
     # Cohort-specific extras (ALSPAC FI; Rotterdam Ca2, CysC, PO4, SHBG, TC,
     # Urate) and raw LiverF_perc are outside the comparison set; liver fat
-    # is analysed on the log scale in script 39.
+    # is analysed on the log scale in script 38.
     dplyr::filter(trait %in% trait_groups$trait)
   if (anyDuplicated(models[c("cohort", "reftime", "sex", "trait")])) {
     stop("Duplicate cohort/visit/sex/trait models.")

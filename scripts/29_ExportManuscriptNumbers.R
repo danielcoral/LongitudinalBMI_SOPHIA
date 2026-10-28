@@ -168,7 +168,7 @@ write_csv(
 
 # Survival model samples: slope-only Cox models use all participants with
 # slopes; full models (and GAMs) are complete cases for covariates/biomarkers,
-# so they differ from the outcome summary table (Supplementary Table 7).
+# so they differ from the outcome summary table (Supplementary Table 18).
 survival <- readRDS(file.path(processed_dir, "survival_models_current.rds"))
 survival_samples <- survival |>
   transmute(

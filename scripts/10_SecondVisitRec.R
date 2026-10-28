@@ -141,47 +141,11 @@ write_csv(
   )
 )
 
-# Supplementary Figure 11
-second_visit_trajectory_plot <- lmmtab1i |>
-  transmute(
-    sex,
-    plot_data = map(LongD, select, eid, bmi0),
-    plot_data = map(plot_data, distinct),
-    plot_data = map2(plot_data, indiv_est, inner_join, by = "eid")
-  ) |>
-  unnest(plot_data) |>
-  ggplot(aes(x = bmi0, y = Slope)) +
-  ggdensity::geom_hdr() +
-  geom_vline(
-    xintercept = c(22.5, 27.5, 32.5, 37.5, 42.5),
-    linetype = "11", color = "magenta"
-  ) +
-  geom_hline(
-    yintercept = c(-0.5, 0, 0.5),
-    linetype = "11", color = "darkgreen"
-  ) +
-  geom_point(
-    data = expand_grid(
-      bmi0 = c(22.5, 27.5, 32.5, 37.5),
-      Slope = c(-0.5, 0, 0.5)
-    ),
-    color = "blue"
-  ) +
-  geom_smooth(method = "lm", formula = "y ~ x", color = "red") +
-  facet_wrap(~sex) +
-  theme_bw() +
-  labs(
-    x = "BMI at the second visit (kg/m²)",
-    y = "Individual slope (kg/m² per year)",
-    alpha = "Probability\ndensity"
-  ) +
-  theme(
-    legend.title = element_text(size = 8),
-    axis.title = element_text(size = 8),
-    legend.text = element_text(size = 6),
-    axis.text = element_text(size = 6)
-  ) +
-  coord_cartesian(xlim = c(20, 45), ylim = c(-2.5, 2.5))
+# Supplementary Figure 17: density regions and regression line.
+source(file.path(projfld, "src", "trajectory_figure_helpers.R"))
+second_visit_trajectory_plot <- trajectory_density_plot(
+  lmmtab1i, "BMI at the second visit (kg/m²)"
+)
 
 ggsave(
   file.path(

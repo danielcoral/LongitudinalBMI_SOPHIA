@@ -18,18 +18,22 @@ scripts=(
   12_GAMImg2i.R
   22_FollowGuideUKB.R
   23_ReplicationRes.R
-  37_WithinCohortContrasts.R
-  38_SlopeSupportSummary.R
+  36_WithinCohortContrasts.R
+  37_SlopeSupportSummary.R
   # Liver fat, then imaging-visit WHR as an external-measure follow-up.
   13_GAMlogLF.R
-  39_LiverFatQuartileContrasts.R
-  36_LiverFatWhrInteraction.R
+  38_LiverFatQuartileContrasts.R
+  35_LiverFatWhrInteraction.R
+  48_LiverFatSlopeWhrAdjustment.R
+  # Separate WHR context; not part of the shared biomarker panel.
+  46_FitWhrFollowup.R
+  47_SummarizeWhrFollowup.R
   # Stable-reference analyses use shared traits and liver fat, not WHR.
-  34_GainVsStableContrasts.R
-  35_SummarizeSlopeAsymmetry.R
-  40_StableContrastsCommonGrid.R
-  41_StableConsistencyUkbRs.R
-  42_ResultsDigest.R
+  33_GainVsStableContrasts.R
+  34_SummarizeSlopeAsymmetry.R
+  39_StableContrastsCommonGrid.R
+  40_StableConsistencyUkbRs.R
+  41_ResultsDigest.R
   # Sensitivity/subsampling: main biomarkers, DXA and liver fat only.
   06_GAMRec_Boot.R
   07_GAMRec_BootRes.R
@@ -42,7 +46,7 @@ scripts=(
   10_SecondVisitRec.R
   27_MatchedCohortContrasts.R
   28_PlotMatchedCohorts.R
-  33_SummarizeSensitivityAgreement.R
+  32_SummarizeSensitivityAgreement.R
   18_SlopeBMRegDelay.R
   19_SlopeDxReg.R
   20_RCTComp.R
@@ -50,12 +54,10 @@ scripts=(
   # Reporting and document assembly.
   29_ExportManuscriptNumbers.R
   31_AssembleSavedFigures.R
-  43_PlotDesignSlopes.R
-  44_PlotWithinCohortContrasts.R
-  45_PlotLiverFat.R
-  46_PlotLiverFatWhrProfiles.R
-  47_PlotStableReference.R
-  32_AssembleSupplementaryTables.R
+  42_PlotDesignSlopes.R
+  43_PlotWithinCohortContrasts.R
+  44_PlotLiverFat.R
+  45_PlotStableReference.R
 )
 
 printf 'Pipeline started: %s\n' "$(date --iso-8601=seconds)" | tee -a "$run_log"
@@ -66,6 +68,8 @@ for script in "${scripts[@]}"; do
     "scripts/$script" >>"$run_log" 2>&1
   printf '[%s] DONE  scripts/%s\n' "$(date --iso-8601=seconds)" "$script" | tee -a "$run_log"
 done
+"$conda" run --name RLang --no-capture-output Rscript --vanilla \
+  paper/assemble_supplementary_tables.R >>"$run_log" 2>&1
 "$conda" run --name RLang --no-capture-output bash \
   paper/rebuild_manuscript_documents.sh >>"$run_log" 2>&1
 printf '\nPipeline completed: %s\n' "$(date --iso-8601=seconds)" | tee -a "$run_log"

@@ -1,4 +1,4 @@
-# Shared style for the main-figure scripts 43-47: one theme, display labels
+# Shared style for the main-figure scripts 42-45: one theme, display labels
 # for the traits and a function that saves a figure at print size.
 library(ggplot2)
 

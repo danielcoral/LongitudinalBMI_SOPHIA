@@ -34,7 +34,7 @@ stopifnot(
   max(abs(compared$std_error - compared$old_se)) < 1e-8
 )
 # The UK Biobank outcome SD must equal 10 x the threshold (0.1 SD) that
-# script 34 stored for the +-0.5 kg/m2/year contrasts.
+# script 33 stored for the +-0.5 kg/m2/year contrasts.
 thresholds <- readr::read_csv(
   file.path(project_dir, "data", "UKB", "results",
             "slope_reference_contrasts.csv"),

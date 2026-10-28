@@ -22,16 +22,15 @@ analyses were run by each cohort's analysts following
    (scripts 01–04, 11).
 2. Generalized additive models of biomarkers, DXA fat and liver fat on age,
    BMI and slope (05, 12, 13, 22); subsampling and sensitivity analyses
-   (06–10, 14–17, 33).
+   (06–10, 14–17, 32).
 3. Within-cohort contrasts between the lower and upper quartile of slope at
-   the same BMI, evaluated from the fitted models (37–39); waist-to-hip ratio
-   follow-up for liver fat (36).
-4. Gain, stable and loss contrasts in UK Biobank and Rotterdam (34, 35, 40,
-   41).
+   the same BMI, evaluated from the fitted models (36–38); waist-to-hip ratio
+   follow-up for liver fat (35, 46–48).
+4. Gain, stable and loss contrasts in UK Biobank and Rotterdam (39, 40).
 5. Lagged biomarkers, incident outcomes and the Diabetes Prevention Program
    comparison (18–20).
 6. Cross-cohort summaries, figures, supplementary tables and documents
-   (23–32, 42–47); document assembly is in `paper/`.
+   (23–31, 41–45); table and document assembly is in `paper/`.
 
 ## Software
 

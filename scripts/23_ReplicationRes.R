@@ -3,7 +3,7 @@
 # Outputs: plots/cross_cohort_biomarker_distributions.png and
 #   plots/cross_cohort_comorbidities.png; table_cross_cohort_sample_sizes.csv
 #   and table_cross_cohort_biomarker_distributions.csv in data/UKB/results/.
-# Slope contrasts across cohorts are in 37_WithinCohortContrasts.R.
+# Slope contrasts across cohorts are in 36_WithinCohortContrasts.R.
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)

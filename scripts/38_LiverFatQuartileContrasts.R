@@ -4,7 +4,7 @@
 # Nothing is refitted: the saved models are evaluated.
 # Input: data/UKB/processed_data/slopebmregdf_2ilf.rds (log liver-fat models
 #   with their data).
-# Output: data/UKB/results/liver_fat_quartile_contrasts.csv.
+# Adds age-specific contrasts to the saved liver-fat output.
 library(mgcv)
 library(dplyr, warn.conflicts = FALSE)
 library(purrr)
@@ -25,9 +25,10 @@ slope_pairs <- map(
 )
 
 # "cohort_percentile" evaluates each model at its own sample's BMI
-# quartiles and median age (as for every other trait in script 37);
-# "ukb_fixed" uses the fixed grid of script 34 (age 45, 55, 65; BMI 22.5 to
-# 37.5), flagged when outside the central 95% of the sample.
+# quartiles and median age (as for every other trait in script 36);
+# "ukb_fixed" retains the fixed grid of script 33 for existing summaries.
+# "age_bmi_percentile" evaluates MRI-sample BMI quartiles at ages 55, 60 and
+# 65 for Figure 3.
 liver_rows <- pmap_dfr(
   list(sex = liver$sex, data = liver$bmdf, model = liver$mod1),
   function(sex, data, model) {
@@ -42,9 +43,21 @@ liver_rows <- pmap_dfr(
       model, slope_contrast_grid(), slope_pairs[[sex]]
     )
     fixed$grid <- "ukb_fixed"
+    age_bmi <- model_grid(
+      model,
+      age = rep(c(55, 60, 65), each = 3),
+      bmi = rep(bmi_quartiles, times = 3)
+    ) |>
+      mutate(
+        bmi_percentile = rep(c("p25", "p50", "p75"), times = 3)
+      )
+    age_bmi <- quartile_contrast_rows(
+      model, age_bmi, slope_pairs[[sex]]
+    )
+    age_bmi$grid <- "age_bmi_percentile"
     age_limits <- quantile(data$age, c(0.025, 0.975))
     bmi_limits <- quantile(data$bmi, c(0.025, 0.975))
-    bind_rows(percentile, fixed) |>
+    bind_rows(percentile, fixed, age_bmi) |>
       mutate(
         cohort = "UKB", reftime = "2i", sex = sex, trait = "logLiverF_perc",
         p_value = 2 * pnorm(-abs(estimate / std_error)),
@@ -63,7 +76,7 @@ liver_rows <- pmap_dfr(
     ratio_low, ratio_high, outcome_sd, estimate_sd, conf_low_sd,
     conf_high_sd, n, age_in_central95, bmi_in_central95
   )
-stopifnot(nrow(liver_rows) == 30, !anyNA(liver_rows$estimate))
+stopifnot(nrow(liver_rows) == 48, !anyNA(liver_rows$estimate))
 
 readr::write_csv(
   liver_rows, file.path(results_dir, "liver_fat_quartile_contrasts.csv")
