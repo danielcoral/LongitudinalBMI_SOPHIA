@@ -1,23 +1,23 @@
 # Libraries ----
+source("src/project_setup.R")
 library(readr)
 library(dplyr)
 library(tidyr)
 library(purrr)
 
 # Project folder ----
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 source(file.path(projfld, "src", "biomarker_ranges.R"))
 write_csv(
   biomarker_ranges,
-  file.path(projfld, "data", "UKB", "results", "table_supp_10_ranges.csv")
+  file.path(project_paths$ukb_results, "table_supp_10_ranges.csv")
 )
 
 # Weight data ----
 
 ## Weight data at recruitment (instance 0) ----
 wrec <- read_csv(
-  file.path(
-    projfld, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
     "Weight_Recruitment_participant.csv"
   )
 )
@@ -44,8 +44,7 @@ wrec <- wrec |>
 
 ## Weight data at instance 1 ----
 w1i <- read_csv(
-  file.path(
-    projfld, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
     "Weight_Instance1_participant.csv"
   )
 )
@@ -72,8 +71,7 @@ w1i <- w1i |>
 
 ## Weight data at instance 2 ----
 w2i <- read_csv(
-  file.path(
-    projfld, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
     "Weight_Instance2_participant.csv"
   )
 )
@@ -100,8 +98,7 @@ w2i <- w2i |>
 
 ## Weight data from GP records ----
 wgpc <- read_tsv(
-  file.path(
-    projfld, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
     "OnlyWeights_gp.tsv"
   ),
   col_types = "ncDnnn"
@@ -159,7 +156,7 @@ bmilongrec <- wrec |>
 # Saving
 write_tsv(
   bmilongrec,
-  file.path(projfld, "data", "UKB", "processed_data", "bmilongrec.tsv")
+  file.path(project_paths$ukb_processed, "bmilongrec.tsv")
 )
 
 ## Until instance 1 ----
@@ -204,7 +201,7 @@ bmilong1i <- bind_rows(
 # Saving
 write_tsv(
   bmilong1i,
-  file.path(projfld, "data", "UKB", "processed_data", "bmilong1i.tsv")
+  file.path(project_paths$ukb_processed, "bmilong1i.tsv")
 )
 
 ## Until instance 2 ----
@@ -255,15 +252,14 @@ bmilong2i <- bind_rows(
 # Saving
 write_tsv(
   bmilong2i,
-  file.path(projfld, "data", "UKB", "processed_data", "bmilong2i.tsv")
+  file.path(project_paths$ukb_processed, "bmilong2i.tsv")
 )
 
 # Biomarker data ----
 
 ## Biomarker data at recruitment ----
 bmrec <- read_csv(
-  file.path(
-    projfld, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
     "BMOut_Recruitment_participant.csv"
   )
 )
@@ -319,13 +315,12 @@ bmrec <- bmrec |>
 # Saving
 write_tsv(
   bmrec,
-  file.path(projfld, "data", "UKB", "processed_data", "bmrec.tsv")
+  file.path(project_paths$ukb_processed, "bmrec.tsv")
 )
 
 ## Biomarker data at instance 1 ----
 bm1i <- read_csv(
-  file.path(
-    projfld, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
     "BMOut_Instance1_participant.csv"
   ),
   col_types = cols(.default = "n")
@@ -385,13 +380,12 @@ bm1i <- bm1i |>
 # Saving
 write_tsv(
   bm1i,
-  file.path(projfld, "data", "UKB", "processed_data", "bm1i.tsv")
+  file.path(project_paths$ukb_processed, "bm1i.tsv")
 )
 
 ## Imaging data at instance 2 ----
 img2i <- read_csv(
-  file.path(
-    projfld, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
     "Imaging_Instance2_participant.csv"
   ),
   col_types = cols(.default = "n")
@@ -429,15 +423,14 @@ img2i <- img2i |>
 # Saving
 write_tsv(
   img2i,
-  file.path(projfld, "data", "UKB", "processed_data", "img2i.tsv")
+  file.path(project_paths$ukb_processed, "img2i.tsv")
 )
 
 # Covariates ----
 
 ## Genetic ancestry data ----
 genancestry <- read_csv(
-  file.path(
-    projfld, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
     "GenAncestry.csv"
   ),
   col_types = "ncc"
@@ -454,8 +447,7 @@ ancestrytab <- genancestry |>
 # Saving
 write_tsv(
   ancestrytab,
-  file.path(
-    projfld, "data", "UKB", "processed_data",
+  file.path(project_paths$ukb_processed,
     "ancestrytab.tsv"
   )
 )
@@ -468,8 +460,7 @@ tocheck <- c(
 
 ## Covariate data at recruitment ----
 cvrec <- read_csv(
-  file.path(
-    projfld, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
     "Covariates_Recruitment_participant.csv"
   )
 )
@@ -585,13 +576,12 @@ cvrec <- cvrec |>
 # Saving
 write_tsv(
   cvrec,
-  file.path(projfld, "data", "UKB", "processed_data", "cvrec.tsv")
+  file.path(project_paths$ukb_processed, "cvrec.tsv")
 )
 
 ## Covariate data at instance 1 ----
 cv1i <- read_csv(
-  file.path(
-    projfld, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
     "Covariates_Instance1_participant.csv"
   )
 )
@@ -718,13 +708,12 @@ cv1i <- cv1i |>
 # Saving
 write_tsv(
   cv1i,
-  file.path(projfld, "data", "UKB", "processed_data", "cv1i.tsv")
+  file.path(project_paths$ukb_processed, "cv1i.tsv")
 )
 
 ## Covariate data at instance 2 ----
 cv2i <- read_csv(
-  file.path(
-    projfld, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
     "Covariates_Instance2_participant.csv"
   )
 )
@@ -858,7 +847,7 @@ cv2i <- cv2i |>
 # Saving
 write_tsv(
   cv2i,
-  file.path(projfld, "data", "UKB", "processed_data", "cv2i.tsv")
+  file.path(project_paths$ukb_processed, "cv2i.tsv")
 )
 
 # Survival outcomes data ----
@@ -868,8 +857,7 @@ censordate <- as.Date("2021-12-31")
 
 ## Mortality data ----
 mortdat <- read_tsv(
-  file.path(
-    projfld, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
     "death.txt"
   ),
   col_types = "n---D",
@@ -882,8 +870,7 @@ mortdat <- read_tsv(
 
 ### Importing ----
 outdat <- read_tsv(
-  file.path(
-    projfld, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
     "Outcomes_participant.tsv"
   ),
   col_types = "nDDDDD"
@@ -940,5 +927,5 @@ outdat <- outdat |>
 ### Saving ----
 write_tsv(
   outdat,
-  file.path(projfld, "data", "UKB", "processed_data", "outdat.tsv")
+  file.path(project_paths$ukb_processed, "outdat.tsv")
 )

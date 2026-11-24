@@ -2,8 +2,9 @@
 # ALSPAC, UK Biobank and the Rotterdam Study (the 17 traits measured in all
 # three cohorts). Biomarkers are above DXA measures; differences are in
 # standard deviations (SD) of each trait.
-# Input: data/cross_cohort/within_cohort_contrasts.csv (script 36).
+# Input: results/cross_cohort/within_cohort_contrasts.csv (script 36).
 # Output figure: plots/within_cohort_contrasts.png
+source("src/project_setup.R")
 library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
 library(patchwork)
@@ -12,7 +13,7 @@ project_dir <- getwd()
 source(file.path(project_dir, "src", "within_cohort_helpers.R"))
 source(file.path(project_dir, "src", "figure_helpers.R"))
 contrasts <- readr::read_csv(
-  file.path(project_dir, "data", "cross_cohort",
+  file.path(project_paths$cross_cohort,
             "within_cohort_contrasts.csv"),
   show_col_types = FALSE
 ) |>

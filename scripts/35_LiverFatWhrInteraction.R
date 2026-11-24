@@ -2,26 +2,27 @@
 # Same BMI and same recent BMI slope, but central (higher WHR) versus more
 # peripheral (lower WHR) fat: does liver fat differ, and does the slope
 # contrast differ? WHR is measured at the imaging visit, as is liver fat.
-# Inputs: data/UKB/processed_data/slopebmregdf_2ilf.rds (log liver-fat model
-#   data); data/UKB/raw_data/WaistHip_Instance2.tsv (UK Biobank fields 48 and
+# Inputs: data/local/processed/slopebmregdf_2ilf.rds (log liver-fat model
+#   data); data/local/raw/WaistHip_Instance2.tsv (UK Biobank fields 48 and
 #   49, instance 2; extracted from the main UK Biobank table with
 #   `cut -f1,75,79 41806.tab`).
-# Outputs (data/UKB/results/): liver_fat_whr_tests.csv,
+# Outputs (results/ukb/): liver_fat_whr_tests.csv,
 #   liver_fat_whr_diagnostics.csv, liver_fat_whr_profiles.csv,
 #   liver_fat_whr_predictions.csv, liver_fat_whr_slope_contrasts.csv,
 #   liver_fat_whr_profile_contrasts.csv,
 #   liver_fat_whr_profile_differences.csv.
-# Model output: data/UKB/processed_data/liver_fat_whr_models.rds
+# Model output: data/local/processed/liver_fat_whr_models.rds
 # dplyr resolves column names through non-standard evaluation.
 # nolint start: object_usage_linter.
+source("src/project_setup.R")
 library(mgcv)
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
 source("src/liver_fat_interaction_helpers.R")
 
-results_dir <- "data/UKB/results"
-model_path <- "data/UKB/processed_data/liver_fat_whr_models.rds"
+results_dir <- project_paths$ukb_results
+model_path <- file.path(project_paths$ukb_processed, "liver_fat_whr_models.rds")
 bmi_values <- c(25, 30, 35)
 profile_age <- 60
 bmi_half_width <- 2.5
@@ -29,10 +30,13 @@ whr_half_width <- 0.025
 age_half_width <- 5
 profile_levels <- c("Lower (p25)", "Median (p50)", "Higher (p75)")
 
-original <- readRDS("data/UKB/processed_data/slopebmregdf_2ilf.rds") |>
+original <- readRDS(file.path(
+  project_paths$ukb_processed, "slopebmregdf_2ilf.rds"
+)) |>
   filter(trait == "logLiverF_perc")
 waist_hip <- read_tsv(
-  "data/UKB/raw_data/WaistHip_Instance2.tsv", show_col_types = FALSE
+  file.path(project_paths$ukb_raw, "WaistHip_Instance2.tsv"),
+  show_col_types = FALSE
 ) |>
   transmute(eid = f.eid, WHR = f.48.2.0 / f.49.2.0) |>
   filter(is.finite(WHR))

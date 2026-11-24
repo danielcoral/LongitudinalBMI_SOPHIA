@@ -1,4 +1,5 @@
 # Extract manuscript numbers from existing model/data outputs, without refits.
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr)
@@ -7,8 +8,8 @@ library(mgcv)
 library(lme4)
 
 project_dir <- getwd()
-processed_dir <- file.path(project_dir, "data", "UKB", "processed_data")
-results_dir <- file.path(project_dir, "data", "UKB", "results")
+processed_dir <- file.path(project_paths$ukb_processed)
+results_dir <- file.path(project_paths$ukb_results)
 source("src/biomarker_ranges.R")
 source("src/within_cohort_helpers.R")
 write_csv(biomarker_ranges, file.path(results_dir, "table_supp_10_ranges.csv"))
@@ -51,9 +52,7 @@ write_csv(
 )
 
 cohort_summary <- map_dfr(c("ALSPAC", "RS", "UKB"), function(cohort) {
-  result <- readRDS(file.path(
-    project_dir, "data", cohort, paste0("resultdf_", cohort, ".rds")
-  ))
+  result <- readRDS(cohort_files[[cohort]])
   if (!"reftime" %in% names(result)) result$reftime <- NA_character_
   pmap_dfr(
     list(
@@ -141,12 +140,12 @@ write_csv(
 
 # Delay among eligible participants with a later biomarker measurement.
 recruitment <- read_csv(
-  file.path(project_dir, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
             "Weight_Recruitment_participant.csv"), show_col_types = FALSE
 ) |>
   transmute(eid, recruitment_date = as.Date(p53_i0))
 second <- read_csv(
-  file.path(project_dir, "data", "UKB", "raw_data",
+  file.path(project_paths$ukb_raw,
             "Weight_Instance1_participant.csv"), show_col_types = FALSE
 ) |>
   transmute(eid, second_date = as.Date(p53_i1))
@@ -183,13 +182,14 @@ write_csv(
 )
 
 # Audit document references, including missing outputs, without hiding gaps.
-documents <- c("paper/manus.md", "paper/main_figs.md",
-               "paper/supp_figs.md", "paper/supp_tables.md")
+documents <- c("paper/manuscript.md", "paper/main_figs.md",
+               "paper/suppfigsmap.md", "paper/supp_notes.md",
+               "paper/supp_tables.md")
 references <- map_dfr(documents, function(document) {
   text <- readLines(document)
   map2_dfr(text, seq_along(text), function(line, number) {
     paths <- regmatches(line, gregexpr(
-      "(?:data|plots)/[A-Za-z0-9_./-]+\\.(?:csv|tsv|txt|png|rds)",
+      "(?:data|results|plots)/[A-Za-z0-9_./-]+\\.(?:csv|tsv|txt|png|rds)",
       line, perl = TRUE
     ))[[1]]
     tibble(document, line = number, output = paths,

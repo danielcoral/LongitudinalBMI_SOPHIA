@@ -1,3 +1,4 @@
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
@@ -6,14 +7,14 @@ library(ggplot2)
 library(mgcv)
 library(patchwork)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 lmmtab2i <- readRDS(
-  file.path(projfld, "data", "UKB", "processed_data", "lmmtab2i.rds")
+  file.path(project_paths$ukb_processed, "lmmtab2i.rds")
 )
 
 img2i <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "img2i.tsv"),
+  file.path(project_paths$ukb_processed, "img2i.tsv"),
   show_col_types = FALSE
 )
 
@@ -27,7 +28,7 @@ liver_fat_distribution_plot <- img2i |>
   )
 
 ggsave(
-  file.path(projfld, "plots", "liver_fat_distribution.png"),
+  file.path(project_paths$plots, "liver_fat_distribution.png"),
   plot = liver_fat_distribution_plot, width = 4, height = 3,
   units = "in", dpi = 300, bg = "white"
 )
@@ -42,12 +43,12 @@ log_liver_distribution <- img2i |>
   )
 
 cv2i <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "cv2i.tsv"),
+  file.path(project_paths$ukb_processed, "cv2i.tsv"),
   show_col_types = FALSE
 )
 
 ancestrytab <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "ancestrytab.tsv"),
+  file.path(project_paths$ukb_processed, "ancestrytab.tsv"),
   col_types = "nf"
 )
 
@@ -113,14 +114,14 @@ slopebmregdf_2ilf <- slopebmregdf_2ilf |>
   )
 
 slopebmregdf_2ilf <- readRDS(
-  file.path(projfld, "data", "UKB", "processed_data", "slopebmregdf_2i.rds")
+  file.path(project_paths$ukb_processed, "slopebmregdf_2i.rds")
 ) |>
   filter(trait == "LiverF_perc") |>
   bind_rows(slopebmregdf_2ilf)
 
 saveRDS(
   slopebmregdf_2ilf,
-  file.path(projfld, "data", "UKB", "processed_data", "slopebmregdf_2ilf.rds")
+  file.path(project_paths$ukb_processed, "slopebmregdf_2ilf.rds")
 )
 
 varexpdf_2ilf <- slopebmregdf_2ilf |>
@@ -273,7 +274,7 @@ addedvalslope_2ilf <- addvaluedf_2ilf |>
 
 write_tsv(
   addedvalslope_2ilf,
-  file.path(projfld, "data", "UKB", "processed_data", "addedvalslope_2ilf.tsv")
+  file.path(project_paths$ukb_processed, "addedvalslope_2ilf.tsv")
 )
 
 addedvalslopeint_2ilf <- addvaluedf_2ilf |>
@@ -446,7 +447,7 @@ saveRDS(
     A = log_liver_distribution, B = log_liver_variance,
     C = log_liver_decomposition, D = log_liver_contrasts
   ),
-  file.path(projfld, "data", "UKB", "processed_data", "log_liver_panels.rds")
+  file.path(project_paths$ukb_processed, "log_liver_panels.rds")
 )
 
 liver_fat_model_plot <- patchwork::wrap_plots(
@@ -456,29 +457,25 @@ liver_fat_model_plot <- patchwork::wrap_plots(
 
 write_csv(
   varexpdf_2ilf,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_log_liver_fat_variance_explained.csv"
   )
 )
 write_csv(
   addedvalslope_2ilf,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_log_liver_fat_slope_added_value.csv"
   )
 )
 write_csv(
   addedvalslopeint_2ilf,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_log_liver_fat_interaction_added_value.csv"
   )
 )
 write_csv(
   pdiffdf_2ilf,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_log_liver_fat_rapid_gain_vs_loss.csv"
   )
 )

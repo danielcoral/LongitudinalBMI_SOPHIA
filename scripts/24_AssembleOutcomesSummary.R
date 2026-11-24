@@ -3,13 +3,14 @@
 # A: marginal outcomes; B: outcomes adjusted for age and BMI; C: DPP.
 # Inputs: three saved ggplot objects (plot_marginal_outcomes.rds,
 #   plot_adjusted_outcomes.rds and plot_dpp_comparison.rds), all stored
-#   in the folder data/UKB/processed_data.
+#   in the folder data/local/processed.
 # Output figure: plots/outcomes_dpp_summary.png
+source("src/project_setup.R")
 library(ggplot2)
 library(patchwork)
 
 project_dir <- getwd()
-plot_data_dir <- file.path(project_dir, "data", "UKB", "processed_data")
+plot_data_dir <- file.path(project_paths$ukb_processed)
 
 marginal_outcomes_plot <- readRDS(
   file.path(plot_data_dir, "plot_marginal_outcomes.rds")
@@ -46,7 +47,7 @@ outcomes_summary_plot <- outcome_panels / dpp_plot +
   paper_theme
 
 ggsave(
-  file.path(project_dir, "plots", "outcomes_dpp_summary.png"),
+  file.path(project_paths$plots, "outcomes_dpp_summary.png"),
   plot = outcomes_summary_plot,
   width = 8, height = 7, units = "in", dpi = 300, bg = "white"
 )

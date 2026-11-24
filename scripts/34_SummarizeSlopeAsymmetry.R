@@ -1,10 +1,11 @@
 # Summarize signed curvature, retaining both increments and their uncertainty.
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
 library(ggplot2)
 
-results_dir <- "data/UKB/results"
+results_dir <- project_paths$ukb_results
 contrasts <- read_csv(
   file.path(results_dir, "slope_reference_contrasts.csv"),
   show_col_types = FALSE
@@ -119,7 +120,7 @@ for (family in c("primary", "imaging", "log_liver_fat")) {
     log_liver_fat = "gain_vs_stable_log_liver_fat.png"
   )
   ggsave(
-    file.path("plots", filename), figure, width = 7,
+    file.path(project_paths$plots, filename), figure, width = 7,
     height = switch(family, primary = 8.4, imaging = 6.4, log_liver_fat = 3.5),
     units = "in", dpi = 300, bg = "white"
   )

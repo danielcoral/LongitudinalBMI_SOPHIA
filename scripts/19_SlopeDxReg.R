@@ -1,3 +1,4 @@
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
@@ -7,30 +8,30 @@ library(survival)
 library(mgcv)
 library(patchwork)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 lmmtabrec <- read_rds(
-  file.path(projfld, "data", "UKB", "processed_data", "lmmtabrec.rds")
+  file.path(project_paths$ukb_processed, "lmmtabrec.rds")
 )
 
 bmrec <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "bmrec.tsv"),
+  file.path(project_paths$ukb_processed, "bmrec.tsv"),
   show_col_types = FALSE
 )
 
 cvrec <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "cvrec.tsv"),
+  file.path(project_paths$ukb_processed, "cvrec.tsv"),
   show_col_types = FALSE
 )
 
 ancestrytab <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "ancestrytab.tsv"),
+  file.path(project_paths$ukb_processed, "ancestrytab.tsv"),
   col_types = "nf"
 ) |>
   mutate(ancestry = 1 * (ancestry == "EUR"))
 
 outdat <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "outdat.tsv"),
+  file.path(project_paths$ukb_processed, "outdat.tsv"),
   show_col_types = FALSE
 )
 
@@ -156,7 +157,7 @@ marginal_outcomes_plot <- slopedxregdf |>
 
 saveRDS(
   marginal_outcomes_plot,
-  file.path(projfld, "data", "UKB", "processed_data", "plot_marginal_outcomes.rds")
+  file.path(project_paths$ukb_processed, "plot_marginal_outcomes.rds")
 )
 
 slopedxregdf <- slopedxregdf |>
@@ -276,11 +277,11 @@ outcome_slope_tests <- slopedxregdf |>
   mutate(padj = p.adjust(slp_test, method = "fdr"))
 write_csv(
   outcome_slope_tests,
-  file.path(projfld, "data", "UKB", "results", "outcome_slope_tests.csv")
+  file.path(project_paths$ukb_results, "outcome_slope_tests.csv")
 )
 saveRDS(
   slopedxregdf,
-  file.path(projfld, "data", "UKB", "processed_data",
+  file.path(project_paths$ukb_processed,
             "survival_models_current.rds")
 )
 
@@ -317,7 +318,7 @@ slopedxregdf |>
         difference = as.numeric(cdif), conf_low = as.numeric(lwr),
         conf_high = as.numeric(upr)
       ),
-      file.path(projfld, "data", "UKB", "results", "stroke_concordance.csv")
+      file.path(project_paths$ukb_results, "stroke_concordance.csv")
     )
     message(
       "\n",
@@ -399,13 +400,13 @@ stroke_calibration_plot <- calibdat |>
   theme_bw()
 
 ggsave(
-  file.path(projfld, "plots", "stroke_calibration.png"),
+  file.path(project_paths$plots, "stroke_calibration.png"),
   plot = stroke_calibration_plot, width = 5, height = 4,
   units = "in", dpi = 300, bg = "white"
 )
 write_csv(
   calibdat,
-  file.path(projfld, "data", "UKB", "results", "table_stroke_calibration.csv")
+  file.path(project_paths$ukb_results, "table_stroke_calibration.csv")
 )
 
 compquint_isol <- slopedxregdf |>
@@ -638,22 +639,19 @@ adjusted_outcomes_plot <- compslope |>
 
 saveRDS(
   adjusted_outcomes_plot,
-  file.path(
-    projfld, "data", "UKB", "processed_data",
+  file.path(project_paths$ukb_processed,
     "plot_adjusted_outcomes.rds"
   )
 )
 write_csv(
   compquint_isol,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_incident_outcomes_marginal_quintiles.csv"
   )
 )
 write_csv(
   compslope,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_incident_outcomes_adjusted_contrasts.csv"
   )
 )
@@ -778,14 +776,13 @@ stroke_decision_plot <- patchwork::wrap_plots(
   patchwork::plot_annotation(tag_levels = "A")
 
 ggsave(
-  file.path(projfld, "plots", "stroke_decision_curves.png"),
+  file.path(project_paths$plots, "stroke_decision_curves.png"),
   plot = stroke_decision_plot, width = 10, height = 3,
   units = "in", dpi = 300, bg = "white"
 )
 write_csv(
   dca_results,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_stroke_decision_curves.csv"
   )
 )

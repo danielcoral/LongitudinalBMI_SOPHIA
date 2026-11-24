@@ -1,3 +1,4 @@
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
@@ -6,10 +7,10 @@ library(ggplot2)
 library(mgcv)
 library(patchwork)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 slopebmregdf_2i <- readRDS(
-  file.path(projfld, "data", "UKB", "processed_data", "slopebmregdf_2i.rds")
+  file.path(project_paths$ukb_processed, "slopebmregdf_2i.rds")
 )
 
 bootdf <- slopebmregdf_2i |>
@@ -19,8 +20,7 @@ bootdf <- slopebmregdf_2i |>
       sex, trait,
       function(sx, trt) {
         read_tsv(
-          file.path(
-            projfld, "data", "UKB", "processed_data", "bootstrap_2i",
+          file.path(project_paths$ukb_processed, "bootstrap_2i",
             paste0("PREDS_", sx, "_", trt, ".tsv")
           ),
           show_col_types = FALSE
@@ -144,8 +144,7 @@ bootmse <- slopebmregdf_2i |>
       sex, trait,
       function(sx, trt){
         read_tsv(
-          file.path(
-            projfld, "data", "UKB", "processed_data", "bootstrap_2i",
+          file.path(project_paths$ukb_processed, "bootstrap_2i",
             paste0("MSEDAT_", sx, "_", trt, ".tsv")
           ),
           show_col_types = FALSE
@@ -167,15 +166,14 @@ bootmse <- slopebmregdf_2i |>
   )
 
 ggsave(
-  file.path(projfld, "plots", "imaging_subsampling_estimates.png"),
+  file.path(project_paths$plots, "imaging_subsampling_estimates.png"),
   plot = imaging_subsampling_plot, width = 7, height = 4,
   units = "in", dpi = 300, bg = "white"
 )
 
 write_csv(
   bootdf,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_imaging_subsampling_estimates.csv"
   )
 )
@@ -192,14 +190,13 @@ imaging_subsampling_mse_plot <- bootmse |>
   theme_bw() +
   labs(x = "Test/train MSE ratio", y = NULL)
 ggsave(
-  file.path(projfld, "plots", "imaging_subsampling_mse.png"),
+  file.path(project_paths$plots, "imaging_subsampling_mse.png"),
   plot = imaging_subsampling_mse_plot, width = 4, height = 3,
   units = "in", dpi = 300, bg = "white"
 )
 write_csv(
   bootmse,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_imaging_subsampling_mse.csv"
   )
 )

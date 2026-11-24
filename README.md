@@ -11,31 +11,59 @@ analyses were run by each cohort's analysts following
 
 ## Contents
 
-- `scripts/`: analysis scripts, numbered by stage. `src/run_pipeline.sh`
-  lists the order in which they are run. Each script has a header describing
-  its purpose, inputs and outputs.
-- `src/`: helper functions and the pipeline runner.
+- `scripts/`: numbered analysis stages; see `scripts/README.md` for setup,
+  stage groups, workflow commands and HTCondor execution.
+- `src/`: reusable analysis and figure helpers.
+- `config/config.yaml`: shared paths, cohort result locations and each
+  stage's inputs, outputs and resource settings.
+- `Snakefile`: dependency-aware analysis entry point.
+- `data/local/{raw,processed}/`: restricted UK Biobank inputs and derived
+  participant-level datasets, saved models and plotting objects.
+- `data/external/processed/`: returned ALSPAC and Rotterdam model results.
+- `results/{ukb,cross_cohort}/` and `plots/`: generated analysis exports.
+- `paper/`: manuscript, bibliography, asset maps and document tools; see
+  `paper/README.md` before building publication assets.
+
+Data, results and publication assets are private and excluded from Git.
+Keep existing received data unchanged; model outputs can contain sensitive
+information even when they are not rectangular participant tables.
 
 ## Analysis outline
 
-1. Data preparation and 5-year BMI slopes from primary-care weight records
-   (scripts 01–04, 11).
-2. Generalized additive models of biomarkers, DXA fat and liver fat on age,
-   BMI and slope (05, 12, 13, 22); subsampling and sensitivity analyses
-   (06–10, 14–17, 32).
-3. Within-cohort contrasts between the lower and upper quartile of slope at
-   the same BMI, evaluated from the fitted models (36–38); waist-to-hip ratio
-   follow-up for liver fat (35, 46–48).
-4. Gain, stable and loss contrasts in UK Biobank and Rotterdam (39, 40).
-5. Lagged biomarkers, incident outcomes and the Diabetes Prevention Program
-   comparison (18–20).
-6. Cross-cohort summaries, figures, supplementary tables and documents
-   (23–31, 41–45); table and document assembly is in `paper/`.
+1. Prepare data and 5-year BMI slopes from primary-care weight records
+   (01-04, 11).
+2. Fit generalized additive models of biomarkers, DXA fat and liver fat on
+   age, BMI and slope (05, 12, 13, 22); subsampling and sensitivity analyses
+   (06-10, 14-17, 32).
+3. Estimate within-cohort lower-versus-upper slope-quartile contrasts at the
+   same BMI (36-38); evaluate liver-fat/waist-to-hip-ratio follow-ups
+   (35, 46-48).
+4. Compare gain, stable and loss contrasts in UK Biobank and Rotterdam
+   (33, 34, 39, 40).
+5. Evaluate lagged biomarkers, incident outcomes and the Diabetes Prevention
+   Program comparison (18-20).
+6. Assemble cross-cohort summaries, figures and manuscript numbers
+   (23-29, 31, 41-45); build publication exports separately in `paper/`.
 
-## Software
+Script numbers identify stages; the Snakefile resolves execution order
+from their saved-file dependencies.
 
-R 4.5.2 with mgcv 1.9-4, dplyr, tidyr, purrr, readr, lme4, survival,
-ggplot2 and patchwork. Python 3 (matplotlib, pandas) for diagrams.
+## Software and execution
+
+`environment.yml` records the Conda environment and direct requirements,
+including the additional CRAN installation command. The existing analysis
+uses R 4.5.2 and mgcv 1.9-4. R figures use ggplot2; two existing Python
+diagrams use matplotlib.
+
+With the project environment active, inspect the workflow from this root:
+
+```sh
+snakemake --dry-run --cores 1
+```
+
+Full analyses run through HTCondor; setup, submission and verification
+commands are in `scripts/README.md`. Publication builds are explicit
+opt-in targets and are excluded from the default analysis run.
 
 ## License
 

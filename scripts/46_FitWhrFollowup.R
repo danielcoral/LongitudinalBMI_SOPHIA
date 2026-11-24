@@ -1,13 +1,14 @@
 # Fit separate WHR outcome models at recruitment and imaging.
 # Inputs: processed anthropometry, covariates and saved BMI trajectories;
 #   imaging-visit waist/hip measurements. Main analysis fits are unchanged.
-# Saves model sets in data/UKB/processed_data/whr_trajectory_models.rds.
+# Saves model sets in data/local/processed/whr_trajectory_models.rds.
+source("src/project_setup.R")
 library(mgcv)
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr)
 
-processed_dir <- "data/UKB/processed_data"
+processed_dir <- project_paths$ukb_processed
 model_path <- file.path(processed_dir, "whr_trajectory_models.rds")
 visits <- c("rec", "2i")
 sexes <- c("Female", "Male")
@@ -42,7 +43,8 @@ for (visit in visits) {
       select(eid, sex, age, bmi, WHR)
   } else {
     waist_hip <- read_tsv(
-      "data/UKB/raw_data/WaistHip_Instance2.tsv", show_col_types = FALSE
+      file.path(project_paths$ukb_raw, "WaistHip_Instance2.tsv"),
+      show_col_types = FALSE
     ) |>
       transmute(eid = f.eid, WHR = f.48.2.0 / f.49.2.0)
     measurements <- read_tsv(

@@ -1,3 +1,4 @@
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
@@ -6,24 +7,24 @@ library(ggplot2)
 library(mgcv)
 library(patchwork)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 lmmtab2i <- readRDS(
-  file.path(projfld, "data", "UKB", "processed_data", "lmmtab2i.rds")
+  file.path(project_paths$ukb_processed, "lmmtab2i.rds")
 )
 
 img2i <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "img2i.tsv"),
+  file.path(project_paths$ukb_processed, "img2i.tsv"),
   show_col_types = FALSE
 )
 
 cv2i <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "cv2i.tsv"),
+  file.path(project_paths$ukb_processed, "cv2i.tsv"),
   show_col_types = FALSE
 )
 
 ancestrytab <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "ancestrytab.tsv"),
+  file.path(project_paths$ukb_processed, "ancestrytab.tsv"),
   col_types = "nf"
 )
 
@@ -104,7 +105,7 @@ slopebmregdf_2i <- slopebmregdf_2i |>
 
 saveRDS(
   slopebmregdf_2i,
-  file.path(projfld, "data", "UKB", "processed_data", "slopebmregdf_2i.rds")
+  file.path(project_paths$ukb_processed, "slopebmregdf_2i.rds")
 )
 
 varexpdf_2i <- slopebmregdf_2i |>
@@ -251,7 +252,7 @@ addedvalslope_2i <- addvaluedf_2i |>
 
 write_tsv(
   addedvalslope_2i,
-  file.path(projfld, "data", "UKB", "processed_data", "addedvalslope_2i.tsv")
+  file.path(project_paths$ukb_processed, "addedvalslope_2i.tsv")
 )
 
 addedvalslopeint_2i <- addvaluedf_2i |>
@@ -439,7 +440,7 @@ imaging_predictions_plot <- predtab |>
   )
 
 ggsave(
-  file.path(projfld, "plots", "imaging_predictions.png"),
+  file.path(project_paths$plots, "imaging_predictions.png"),
   plot = imaging_predictions_plot, width = 7, height = 4,
   units = "in", dpi = 300, bg = "white"
 )
@@ -502,36 +503,31 @@ pdiff_plot <- pdiffdf_2i |>
 
 write_csv(
   varexpdf_2i,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_imaging_model_variance_explained.csv"
   )
 )
 write_csv(
   addedvalslope_2i,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "imaging_slope_added_value.csv"
   )
 )
 write_csv(
   addedvalslopeint_2i,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "imaging_interaction_added_value.csv"
   )
 )
 write_csv(
   FAIdf_2i,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_imaging_variance_decomposition.csv"
   )
 )
 write_csv(
   pdiffdf_2i,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_imaging_rapid_gain_vs_loss.csv"
   )
 )
@@ -548,7 +544,7 @@ write_lines(
     "# Added information from BMI-by-slope interaction",
     capture.output(print(addedvalslopeint_2i, row.names = FALSE))
   ),
-  file.path(projfld, "data", "UKB", "results", "results_imaging_models.txt")
+  file.path(project_paths$ukb_results, "results_imaging_models.txt")
 )
 
 design <- "
@@ -583,11 +579,11 @@ imaging_summary_plot <- patchwork::wrap_plots(
 saveRDS(
   list(varexp_plot = varexp_plot, fai_plot = fai_plot,
        relfai_plot = relfai_plot, pdiff_plot = pdiff_plot),
-  file.path(projfld, "data", "UKB", "processed_data",
+  file.path(project_paths$ukb_processed,
             "figure_panels_12_GAMImg2i.rds")
 )
 ggsave(
-  file.path(projfld, "plots", "imaging.png"),
+  file.path(project_paths$plots, "imaging.png"),
   plot = imaging_summary_plot, width = 7, height = 5,
   units = "in", dpi = 300, bg = "white"
 )

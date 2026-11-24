@@ -1,0 +1,53 @@
+name: RLang
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - python>=3.11,<3.14
+  - pip
+  - pyyaml>=6,<7
+  - python-docx
+  - openpyxl
+  - pandas
+  - matplotlib
+  - pillow
+  - lxml
+  - pandoc
+  - r-base=4.5.2
+  - r-mgcv=1.9_4
+  - r-yaml
+  - r-readr
+  - r-dplyr
+  - r-tidyr
+  - r-purrr
+  - r-matrix
+  - r-lme4
+  - r-broom
+  - r-broom.mixed
+  - r-tibble
+  - r-stringr
+  - r-survival
+  - r-ggplot2
+  - r-patchwork
+  - r-scales
+  - r-gtable
+  - r-insight
+  - r-jsonlite
+  - r-writexl
+  - r-xml2
+  - r-languageserver
+  - snakemake-minimal>=9
+  - poppler
+  - imagemagick
+  - ghostscript
+  - librsvg
+  - file
+  - unzip
+# Additional CRAN packages used by the existing analysis, already in RLang.
+# After creating the environment, run in its R:
+# install.packages(c(
+#   "ggdensity", "ggh4x", "gratia", "marginaleffects", "metagam"
+# ), repos = "https://cloud.r-project.org")
+# Verified versions: ggdensity 1.0.0, ggh4x 0.3.1, gratia 0.9.2,
+# marginaleffects 0.23.0, metagam 0.4.1.

@@ -1,3 +1,4 @@
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
@@ -6,10 +7,10 @@ library(Matrix, warn.conflicts = FALSE)
 library(lme4)
 library(ggplot2)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 bmilong2i <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "bmilong2i.tsv"),
+  file.path(project_paths$ukb_processed, "bmilong2i.tsv"),
   show_col_types = FALSE
 )
 
@@ -63,7 +64,7 @@ lmmtab2i <- lmmtab2i |>
 
 saveRDS(
   lmmtab2i,
-  file.path(projfld, "data", "UKB", "processed_data", "lmmtab2i.rds")
+  file.path(project_paths$ukb_processed, "lmmtab2i.rds")
 )
 
 average_trajectory_2i <- lmmtab2i |>
@@ -87,12 +88,11 @@ write_lines(
     "# Average BMI trajectory before imaging by sex (kg/m2/year; 95% CI)",
     capture.output(print(average_trajectory_2i, row.names = FALSE))
   ),
-  file.path(projfld, "data", "UKB", "results", "results_imaging_trajectory.txt")
+  file.path(project_paths$ukb_results, "results_imaging_trajectory.txt")
 )
 write_csv(
   average_trajectory_2i,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_imaging_average_trajectory.csv"
   )
 )
@@ -136,7 +136,7 @@ imaging_trajectory_plot <- lmmtab2i |>
   coord_cartesian(xlim = c(20, 45), ylim = c(-2.5, 2.5))
 
 ggsave(
-  file.path(projfld, "plots", "imaging_trajectory_distribution.png"),
+  file.path(project_paths$plots, "imaging_trajectory_distribution.png"),
   plot = imaging_trajectory_plot,
   width = 6, height = 3, units = "in", dpi = 300,
   bg = "white"

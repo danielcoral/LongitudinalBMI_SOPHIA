@@ -1,8 +1,9 @@
 # Figure 1: the life-stage windows of the three cohorts and the distribution
 # of the 5-year BMI slope in each. The thick bar is the interquartile range:
 # its ends are the lower and upper quartile used for the contrasts.
-# Input: data/cross_cohort/slope_support_summary.csv (script 37).
+# Input: results/cross_cohort/slope_support_summary.csv (script 37).
 # Output figure: plots/design_slope_distributions.png
+source("src/project_setup.R")
 library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
 library(patchwork)
@@ -15,7 +16,7 @@ strata <- c(
   "Rotterdam Study"
 )
 support <- readr::read_csv(
-  file.path(project_dir, "data", "cross_cohort",
+  file.path(project_paths$cross_cohort,
             "slope_support_summary.csv"),
   show_col_types = FALSE
 ) |>

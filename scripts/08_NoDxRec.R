@@ -1,3 +1,4 @@
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
@@ -6,10 +7,10 @@ library(ggplot2)
 library(mgcv)
 library(patchwork)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 cvrec <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "cvrec.tsv"),
+  file.path(project_paths$ukb_processed, "cvrec.tsv"),
   show_col_types = FALSE
 )
 
@@ -24,7 +25,7 @@ sel_ids <- cvrec |>
   select(eid)
 
 slopebmregdf <- readRDS(
-  file.path(projfld, "data", "UKB", "processed_data", "slopebmregdf.rds")
+  file.path(project_paths$ukb_processed, "slopebmregdf.rds")
 )
 
 slopebmregdf_nodx <- slopebmregdf |>
@@ -202,7 +203,7 @@ diagnosis_exclusion_plot <- pdiffdf |>
   )
 
 ggsave(
-  file.path(projfld, "plots", "excluding_selected_diagnoses.png"),
+  file.path(project_paths$plots, "excluding_selected_diagnoses.png"),
   plot = diagnosis_exclusion_plot,
   width = 7, height = 4, units = "in", dpi = 300,
   bg = "white"
@@ -210,8 +211,7 @@ ggsave(
 
 write_csv(
   unnest(pdiffdf, modpred),
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_sensitivity_excluding_selected_diagnoses.csv"
   )
 )

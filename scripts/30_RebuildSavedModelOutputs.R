@@ -1,5 +1,6 @@
 # Reuse full fitted models; run their existing reporting code and reduced fits.
 # This avoids overwriting expensive full models solely to regenerate outputs.
+source("src/project_setup.R")
 project_dir <- getwd()
 output_scripts <- c("05_GAMRec.R", "12_GAMImg2i.R", "13_GAMlogLF.R")
 for (script in output_scripts) {
@@ -15,8 +16,7 @@ for (script in output_scripts) {
     ) &&
       grepl("mod1 = map", code, fixed = TRUE)) {
       filename <- paste0(target, ".rds")
-      assign(target, readRDS(file.path(
-        project_dir, "data", "UKB", "processed_data", filename
+      assign(target, readRDS(file.path(project_paths$ukb_processed, filename
       )), envir = environment)
       next
     }
@@ -31,8 +31,7 @@ for (script in output_scripts) {
     plot_names, exists, logical(1), envir = environment, inherits = FALSE
   )]
   plot_inputs <- mget(plot_names, envir = environment)
-  saveRDS(plot_inputs, file.path(
-    project_dir, "data", "UKB", "processed_data",
+  saveRDS(plot_inputs, file.path(project_paths$ukb_processed,
     paste0("figure_panels_", sub(".R$", "", script), ".rds")
   ))
 }

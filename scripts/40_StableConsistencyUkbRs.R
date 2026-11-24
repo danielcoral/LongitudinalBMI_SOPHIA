@@ -3,13 +3,14 @@
 # One pair = one trait x sex x comparison present in both cohorts (17
 # traits). "Same sign" compares the signs of the two estimates; only counts
 # are reported, no p-values.
-# Input: data/cross_cohort/stable_contrasts_common_grid.csv (script 39).
-# Output: data/cross_cohort/stable_consistency_ukb_rs.csv (counts).
+# Input: results/cross_cohort/stable_contrasts_common_grid.csv (script 39).
+# Output: results/cross_cohort/stable_consistency_ukb_rs.csv (counts).
+source("src/project_setup.R")
 library(dplyr, warn.conflicts = FALSE)
 
 project_dir <- getwd()
 common <- readr::read_csv(
-  file.path(project_dir, "data", "cross_cohort",
+  file.path(project_paths$cross_cohort,
             "stable_contrasts_common_grid.csv"),
   show_col_types = FALSE
 )
@@ -34,7 +35,7 @@ agreement <- bind_rows(
     share_same_sign = mean(same_sign), .groups = "drop"
   )
 
-output_dir <- file.path(project_dir, "data", "cross_cohort")
+output_dir <- file.path(project_paths$cross_cohort)
 readr::write_csv(
   agreement, file.path(output_dir, "stable_consistency_ukb_rs.csv")
 )

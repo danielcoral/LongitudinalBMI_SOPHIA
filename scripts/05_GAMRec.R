@@ -1,3 +1,4 @@
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
@@ -8,24 +9,24 @@ library(patchwork)
 
 options(repr.plot.res = 300)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 lmmtabrec <- readRDS(
-  file.path(projfld, "data", "UKB", "processed_data", "lmmtabrec.rds")
+  file.path(project_paths$ukb_processed, "lmmtabrec.rds")
 )
 
 bmrec <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "bmrec.tsv"),
+  file.path(project_paths$ukb_processed, "bmrec.tsv"),
   show_col_types = FALSE
 )
 
 cvrec <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "cvrec.tsv"),
+  file.path(project_paths$ukb_processed, "cvrec.tsv"),
   show_col_types = FALSE
 )
 
 ancestrytab <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "ancestrytab.tsv"),
+  file.path(project_paths$ukb_processed, "ancestrytab.tsv"),
   show_col_types = FALSE
 ) |>
   mutate(ancestry = factor(ancestry))
@@ -116,7 +117,7 @@ slopebmregdf <- slopebmregdf |>
 
 saveRDS(
   slopebmregdf,
-  file.path(projfld, "data", "UKB", "processed_data", "slopebmregdf.rds")
+  file.path(project_paths$ukb_processed, "slopebmregdf.rds")
 )
 
 slopebmregres <- slopebmregdf |>
@@ -128,7 +129,7 @@ slopebmregres <- slopebmregdf |>
 
 write_tsv(
   slopebmregres,
-  file.path(projfld, "data", "UKB", "processed_data", "slopebmregres.tsv")
+  file.path(project_paths$ukb_processed, "slopebmregres.tsv")
 )
 
 modelkcheck <- slopebmregdf |>
@@ -143,7 +144,7 @@ modelkcheck <- slopebmregdf |>
 
 write_tsv(
   modelkcheck,
-  file.path(projfld, "data", "UKB", "processed_data", "modelkcheck.tsv")
+  file.path(project_paths$ukb_processed, "modelkcheck.tsv")
 )
 
 varexpdf <- slopebmregdf |>
@@ -154,8 +155,7 @@ varexpdf <- slopebmregdf |>
 
 write_tsv(
   varexpdf,
-  file.path(
-    projfld, "data", "UKB", "processed_data", "varexpdf.tsv"
+  file.path(project_paths$ukb_processed, "varexpdf.tsv"
   )
 )
 
@@ -294,7 +294,7 @@ addedvalslope <- addvaluedf |>
 
 write_tsv(
   addedvalslope,
-  file.path(projfld, "data", "UKB", "processed_data", "addedvalslope.tsv")
+  file.path(project_paths$ukb_processed, "addedvalslope.tsv")
 )
 
 addedvalslopeint <- addvaluedf |>
@@ -319,7 +319,7 @@ addedvalslopeint <- addvaluedf |>
 
 write_tsv(
   addedvalslopeint,
-  file.path(projfld, "data", "UKB", "processed_data", "addedvalslopeint.tsv")
+  file.path(project_paths$ukb_processed, "addedvalslopeint.tsv")
 )
 
 FAIdf <- addvaluedf |>
@@ -517,7 +517,7 @@ biomarker_predictions_plot <- predtab |>
   )
 
 ggsave(
-  file.path(projfld, "plots", "primary_biomarker_predictions.png"),
+  file.path(project_paths$plots, "primary_biomarker_predictions.png"),
   plot = biomarker_predictions_plot,
   width = 7, height = 4, units = "in", dpi = 300,
   bg = "white"
@@ -653,36 +653,31 @@ bivardistrib_plot <- lmmtabrec |>
 
 write_csv(
   varexpdf,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_primary_model_variance_explained.csv"
   )
 )
 write_csv(
   addedvalslope,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_primary_slope_added_value.csv"
   )
 )
 write_csv(
   addedvalslopeint,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_primary_interaction_added_value.csv"
   )
 )
 write_csv(
   FAIdf,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_primary_variance_decomposition.csv"
   )
 )
 write_csv(
   pdiffdf,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_primary_rapid_gain_vs_loss.csv"
   )
 )
@@ -724,8 +719,7 @@ write_lines(
     "# Added information from BMI-by-slope interaction",
     capture.output(print(addedvalslopeint, row.names = FALSE))
   ),
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "results_primary_biomarker_models.txt"
   )
 )
@@ -772,11 +766,11 @@ primary_biomarkers_plot <- patchwork::wrap_plots(
 saveRDS(
   list(bivardistrib_plot = bivardistrib_plot, varex_plot = varex_plot,
        fai_plot = fai_plot, relfai_plot = relfai_plot, pdiff_plot = pdiff_plot),
-  file.path(projfld, "data", "UKB", "processed_data",
+  file.path(project_paths$ukb_processed,
             "figure_panels_05_GAMRec.rds")
 )
 ggsave(
-  file.path(projfld, "plots", "primary_biomarkers.png"),
+  file.path(project_paths$plots, "primary_biomarkers.png"),
   plot = primary_biomarkers_plot,
   width = 7, height = 5, units = "in", dpi = 300,
   bg = "white"

@@ -2,10 +2,11 @@
 # log liver fat) and trajectory densities from saved results, without refits.
 # Outputs: plots/primary_biomarkers.png, imaging.png and
 #   log_liver_fat_complete.png and the strict/second-visit density PNGs.
+source("src/project_setup.R")
 library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
 library(patchwork)
-processed_dir <- file.path(getwd(), "data", "UKB", "processed_data")
+processed_dir <- file.path(project_paths$ukb_processed)
 source(file.path("src", "within_cohort_helpers.R"))
 source(file.path("src", "figure_helpers.R"))
 source(file.path("src", "trajectory_figure_helpers.R"))
@@ -99,7 +100,7 @@ primary_figure <- (density_plot | varex_plot) /
     panel.spacing.x = grid::unit(1, "lines")
   )
 ggsave(
-  "plots/primary_biomarkers.png", primary_figure,
+  file.path(project_paths$plots, "primary_biomarkers.png"), primary_figure,
   width = 7, height = 6.5, dpi = 300, bg = "white"
 )
 imaging <- readRDS(file.path(
@@ -122,7 +123,7 @@ imaging_figure <- wrap_plots(
   design = "ADDD\nBDDD\nCDDD", guides = "keep"
 ) + plot_annotation(tag_levels = "A") & paper_theme
 ggsave(
-  "plots/imaging.png", imaging_figure,
+  file.path(project_paths$plots, "imaging.png"), imaging_figure,
   width = 7, height = 5, dpi = 300, bg = "white"
 )
 log_liver <- c(
@@ -140,7 +141,8 @@ for (panel in c("D", "E")) {
 log_liver_figure <- wrap_plots(log_liver, ncol = 2) +
   plot_annotation(tag_levels = "A") & paper_theme
 ggsave(
-  "plots/log_liver_fat_complete.png", log_liver_figure,
+  file.path(project_paths$plots, "log_liver_fat_complete.png"),
+  log_liver_figure,
   width = 7, height = 5.6, dpi = 300, bg = "white"
 )
 
@@ -160,7 +162,9 @@ for (name in names(trajectory_figures)) {
   trajectories <- readRDS(file.path(processed_dir, settings$input))
   figure <- trajectory_density_plot(trajectories, settings$label)
   ggsave(
-    file.path("plots", paste0(name, "_trajectory_distribution.png")),
+    file.path(
+      project_paths$plots, paste0(name, "_trajectory_distribution.png")
+    ),
     figure, width = 6, height = 3, dpi = 300, bg = "white"
   )
 }

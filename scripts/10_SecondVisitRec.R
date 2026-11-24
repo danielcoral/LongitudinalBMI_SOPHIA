@@ -1,3 +1,4 @@
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
@@ -10,13 +11,13 @@ library(patchwork)
 
 options(repr.plot.res = 300)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 #-------------------------------------------------------------------------------
 # Estimate BMI trajectories up to the second UK Biobank visit (instance 1)
 
 bmilong1i <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "bmilong1i.tsv"),
+  file.path(project_paths$ukb_processed, "bmilong1i.tsv"),
   show_col_types = FALSE
 )
 
@@ -80,7 +81,7 @@ lmmtab1i <- bmilong1i |>
 
 saveRDS(
   lmmtab1i,
-  file.path(projfld, "data", "UKB", "processed_data", "lmmtab1i.rds")
+  file.path(project_paths$ukb_processed, "lmmtab1i.rds")
 )
 
 average_trajectory_1i <- lmmtab1i |>
@@ -121,22 +122,19 @@ write_lines(
     "# Individual BMI trajectory distribution by sex (median and IQR)",
     capture.output(print(individual_trajectory_1i, row.names = FALSE))
   ),
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "results_second_visit_trajectory.txt"
   )
 )
 write_csv(
   second_visit_sample_summary,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_second_visit_sample_summary.csv"
   )
 )
 write_csv(
   average_trajectory_1i,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_second_visit_average_trajectory.csv"
   )
 )
@@ -148,8 +146,7 @@ second_visit_trajectory_plot <- trajectory_density_plot(
 )
 
 ggsave(
-  file.path(
-    projfld, "plots",
+  file.path(project_paths$plots,
     "second_visit_trajectory_distribution.png"
   ),
   plot = second_visit_trajectory_plot,
@@ -160,15 +157,15 @@ ggsave(
 # Biomarker models anchored at the second visit
 
 bm1i <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "bm1i.tsv"),
+  file.path(project_paths$ukb_processed, "bm1i.tsv"),
   show_col_types = FALSE
 )
 cv1i <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "cv1i.tsv"),
+  file.path(project_paths$ukb_processed, "cv1i.tsv"),
   show_col_types = FALSE
 )
 ancestrytab <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "ancestrytab.tsv"),
+  file.path(project_paths$ukb_processed, "ancestrytab.tsv"),
   show_col_types = FALSE
 ) |>
   mutate(ancestry = factor(ancestry))
@@ -225,15 +222,14 @@ slopebmregdf_1i <- biomarker_data_1i |>
 
 saveRDS(
   slopebmregdf_1i,
-  file.path(
-    projfld, "data", "UKB", "processed_data",
+  file.path(project_paths$ukb_processed,
     "slopebmregdf_1i.rds"
   )
 )
 
 # Compare current second-visit models with the current recruitment models.
 slopebmregdf <- readRDS(
-  file.path(projfld, "data", "UKB", "processed_data", "slopebmregdf.rds")
+  file.path(project_paths$ukb_processed, "slopebmregdf.rds")
 )
 
 expectdiffdf <- expand_grid(
@@ -282,8 +278,7 @@ second_visit_comparison <- slopebmregdf |>
 
 write_csv(
   second_visit_comparison,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_second_visit_biomarker_comparison.csv"
   )
 )
@@ -375,8 +370,7 @@ second_visit_biomarker_plot <- second_visit_comparison |>
   )
 
 ggsave(
-  file.path(
-    projfld, "plots",
+  file.path(project_paths$plots,
     "second_visit_biomarker_comparison.png"
   ),
   plot = second_visit_biomarker_comparison_plot,

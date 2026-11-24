@@ -1,6 +1,7 @@
 # Figure 3: regional fat, liver fat and waist-to-hip ratio by recent BMI slope.
 # Inputs: saved within-cohort, liver-fat and WHR contrasts.
 # Rebuilds the main-text figure from saved cohort, liver-fat and WHR contrasts.
+source("src/project_setup.R")
 library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
 library(patchwork)
@@ -12,13 +13,13 @@ source(file.path(project_dir, "src", "figure_helpers.R"))
 
 read_result <- function(path) {
   readr::read_csv(
-    file.path(project_dir, "data", "UKB", "results", path),
+    file.path(project_paths$ukb_results, path),
     show_col_types = FALSE
   )
 }
 
 within <- readr::read_csv(
-  file.path(project_dir, "data", "cross_cohort",
+  file.path(project_paths$cross_cohort,
             "within_cohort_contrasts.csv"),
   show_col_types = FALSE
 )

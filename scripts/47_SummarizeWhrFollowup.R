@@ -1,14 +1,17 @@
 # Summarize separate WHR models and the saved liver-fat/WHR interaction.
 # Inputs: whr_trajectory_models.rds and liver_fat_whr_tests.csv.
 # Outputs: whr_trajectory_summary.csv, whr_trajectory_contrasts.csv and
-#   liver_fat_whr_added_value.csv in data/UKB/results/. No model refits.
+#   liver_fat_whr_added_value.csv in results/ukb/. No model refits.
+source("src/project_setup.R")
 library(mgcv)
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 source("src/within_cohort_helpers.R")
 
-results_dir <- "data/UKB/results"
-fits <- readRDS("data/UKB/processed_data/whr_trajectory_models.rds")
+results_dir <- project_paths$ukb_results
+fits <- readRDS(file.path(
+  project_paths$ukb_processed, "whr_trajectory_models.rds"
+))
 summaries <- contrasts <- list()
 for (i in seq_along(fits)) {
   fit <- fits[[i]]

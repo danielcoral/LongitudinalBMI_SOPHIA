@@ -1,29 +1,30 @@
 # Results digest for the life-stage restructure: key numbers and the status of
 # each planned claim (C1 to C9), computed from the outputs of scripts 36-40.
 # Inputs: within_cohort_contrasts.csv, slope_support_summary.csv and
-#   stable_consistency_ukb_rs.csv in data/cross_cohort/;
+#   stable_consistency_ukb_rs.csv in results/cross_cohort/;
 #   liver_fat_quartile_contrasts.csv, liver_fat_whr_profile_contrasts.csv,
 #   liver_fat_whr_tests.csv and liver_fat_whr_profile_differences.csv
-#   (all in data/UKB/results/).
-# Output: results_digest.txt in data/cross_cohort/ (the text is also printed).
+#   (all in results/ukb/).
+# Output: results/cross_cohort/results_digest.txt; also printed.
+source("src/project_setup.R")
 library(dplyr, warn.conflicts = FALSE)
 
 project_dir <- getwd()
 read_table <- function(folder, name) {
   readr::read_csv(
-    file.path(project_dir, "data", folder, name), show_col_types = FALSE
+    file.path(project_paths[[folder]], name), show_col_types = FALSE
   )
 }
 within <- read_table("cross_cohort", "within_cohort_contrasts.csv")
 support <- read_table("cross_cohort", "slope_support_summary.csv")
 agreement <- read_table("cross_cohort", "stable_consistency_ukb_rs.csv")
-liver <- read_table("UKB/results", "liver_fat_quartile_contrasts.csv") |>
+liver <- read_table("ukb_results", "liver_fat_quartile_contrasts.csv") |>
   filter(grid == "cohort_percentile")
-tests <- read_table("UKB/results", "liver_fat_whr_tests.csv")
+tests <- read_table("ukb_results", "liver_fat_whr_tests.csv")
 whr_profiles <- read_table(
-  "UKB/results", "liver_fat_whr_profile_differences.csv"
+  "ukb_results", "liver_fat_whr_profile_differences.csv"
 )
-whr_levels <- read_table("UKB/results", "liver_fat_whr_profile_contrasts.csv")
+whr_levels <- read_table("ukb_results", "liver_fat_whr_profile_contrasts.csv")
 biomarkers <- c("ALT", "AST", "GGT", "TG", "LDL", "HDL", "SBP", "DBP",
                 "GLU", "CRP", "SCR")
 dxa <- c("BF_perc", "AndF_perc", "GynF_perc", "ArmsF_perc", "LegsF_perc",
@@ -167,6 +168,6 @@ digest <- capture.output({
   ), "\n")
 })
 writeLines(
-  digest, file.path(project_dir, "data", "cross_cohort", "results_digest.txt")
+  digest, file.path(project_paths$cross_cohort, "results_digest.txt")
 )
 writeLines(digest)

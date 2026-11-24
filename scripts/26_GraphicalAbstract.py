@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import matplotlib
+import yaml
 
 matplotlib.use("Agg")
 
@@ -92,6 +93,9 @@ text(ax, 750, 568,
      "Repeated routine weights add practical longitudinal context to metabolic assessment",
      17, "#086b75", "bold")
 
-output = ROOT / "plots" / "graphical_abstract.png"
+with (ROOT / "config/config.yaml").open() as stream:
+    output_dir = ROOT / yaml.safe_load(stream)["paths"]["plots"]
+output_dir.mkdir(parents=True, exist_ok=True)
+output = output_dir / "graphical_abstract.png"
 fig.savefig(output, dpi=100, facecolor="white")
 plt.close(fig)

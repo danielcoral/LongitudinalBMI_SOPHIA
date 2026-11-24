@@ -6,10 +6,11 @@
 # reference values, as in the within-cohort contrasts (script 36). ALSPAC is
 # not included: zero and -0.5 kg/m2/year lie in the extreme lower tail of its
 # slope distribution.
-# Inputs: data/{UKB,RS}/resultdf_{cohort}.rds (saved models, evaluated here);
-#   data/UKB/processed_data/slopebmregdf_2ilf.rds (log liver-fat models);
-#   data/cross_cohort/slope_support_summary.csv (script 37).
-# Output: stable_contrasts_common_grid.csv in data/cross_cohort/.
+# Inputs: configured UKB and RS cohort_results files (saved models);
+#   data/local/processed/slopebmregdf_2ilf.rds (log liver-fat models);
+#   results/cross_cohort/slope_support_summary.csv (script 37).
+# Output: stable_contrasts_common_grid.csv in results/cross_cohort/.
+source("src/project_setup.R")
 library(mgcv)
 library(dplyr, warn.conflicts = FALSE)
 library(purrr)
@@ -22,7 +23,7 @@ bmi_value <- 30
 ages <- c(UKB = 60, RS = 70)
 
 liver <- readRDS(
-  file.path(project_dir, "data", "UKB", "processed_data",
+  file.path(project_paths$ukb_processed,
             "slopebmregdf_2ilf.rds")
 ) |>
   filter(trait == "logLiverF_perc") |>
@@ -50,7 +51,7 @@ rows <- pmap_dfr(
 
 # Is the chosen age and BMI inside the central 95% of the cohort's sample?
 support <- readr::read_csv(
-  file.path(project_dir, "data", "cross_cohort",
+  file.path(project_paths$cross_cohort,
             "slope_support_summary.csv"),
   show_col_types = FALSE
 ) |>
@@ -78,7 +79,7 @@ stopifnot(
   all(common$bmi_in_central95)
 )
 
-output_dir <- file.path(project_dir, "data", "cross_cohort")
+output_dir <- file.path(project_paths$cross_cohort)
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 readr::write_csv(
   common, file.path(output_dir, "stable_contrasts_common_grid.csv")

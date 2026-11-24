@@ -1,11 +1,12 @@
 # Additional contrasts from saved models only: no refits or old output edits.
+source("src/project_setup.R")
 library(mgcv)
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 source("src/slope_contrast_helpers.R")
 
-processed_dir <- "data/UKB/processed_data"
-results_dir <- "data/UKB/results"
+processed_dir <- project_paths$ukb_processed
+results_dir <- project_paths$ukb_results
 model_files <- c(
   primary = "slopebmregdf.rds", imaging = "slopebmregdf_2i.rds",
   log_liver_fat = "slopebmregdf_2ilf.rds"

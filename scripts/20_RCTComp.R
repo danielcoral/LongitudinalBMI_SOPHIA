@@ -1,4 +1,5 @@
 # Data wrangling
+source("src/project_setup.R")
 library(readr)
 library(tibble)
 library(dplyr)
@@ -10,7 +11,7 @@ library(mgcv)
 library(metagam)
 library(ggplot2)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA/"
+projfld <- getwd()
 
 agebmi <- c("age", "bmi")
 
@@ -46,13 +47,11 @@ regresdat <- tibble(
       ~switch(
         .x,
         "rec" = readRDS(
-          file = file.path(
-            projfld, "data", "UKB", "processed_data", "slopebmregdf.rds"
+          file = file.path(project_paths$ukb_processed, "slopebmregdf.rds"
           )
         ),
         "2i" = readRDS(
-          file = file.path(
-            projfld, "data", "UKB", "processed_data", "slopebmregdf_2i.rds"
+          file = file.path(project_paths$ukb_processed, "slopebmregdf_2i.rds"
           )
         )
       )
@@ -80,7 +79,7 @@ write_csv(
   tibble(baseline_bmi = dpp_bmi, baseline_weight_kg = dpp_weight,
          loss_two_years_kg = dpp_wl_2y,
          slope_bmi_per_year = -dpp_wloss_2yp),
-  file.path(projfld, "data", "UKB", "results", "dpp_parameters.csv")
+  file.path(project_paths$ukb_results, "dpp_parameters.csv")
 )
 
 dpptest <- regresdat |>
@@ -139,15 +138,18 @@ dppres <- dpptest |>
   ) |>
   select(-lower)
 
+# Two-year weight-loss associations within the DPP lifestyle arm.
+# Delahanty et al. (2014), Table 3, doi:10.2337/dc14-0018.
 dpp_eff <- tibble(
   term = "DPP",
-  trait = c("GLU", "SBP", "TG", "ALT"),
-  estimate = c(-0.57, -0.30, -2.27, -1),
-  conf.low = c(-0.66, -0.40, -2.76, NA),
-  conf.high = c(-0.48, -0.21, -1.78, NA)
+  trait = c("GLU", "SBP", "TG"),
+  estimate = c(-0.57, -0.30, -2.27),
+  conf.low = c(-0.66, -0.40, -2.76),
+  conf.high = c(-0.48, -0.21, -1.78)
 )
 
 dpp_plot <- dppres |>
+  filter(trait %in% dpp_eff$trait) |>
   select(term, sex, trait, estimate, conf.low, conf.high) |>
   mutate(term = paste("UKB", sex, sep = "_")) |>
   bind_rows(dpp_eff) |>
@@ -175,16 +177,16 @@ dpp_plot <- dppres |>
 
 saveRDS(
   dpp_plot,
-  file.path(projfld, "data", "UKB", "processed_data", "plot_dpp_comparison.rds")
+  file.path(project_paths$ukb_processed, "plot_dpp_comparison.rds")
 )
 write_csv(
   dppres,
-  file.path(projfld, "data", "UKB", "results", "table_dpp_comparison.csv")
+  file.path(project_paths$ukb_results, "table_dpp_comparison.csv")
 )
 write_lines(
   c(
     "# UKB projected biomarker change per kg weight loss",
     capture.output(print(dppres, row.names = FALSE))
   ),
-  file.path(projfld, "data", "UKB", "results", "results_dpp_comparison.txt")
+  file.path(project_paths$ukb_results, "results_dpp_comparison.txt")
 )

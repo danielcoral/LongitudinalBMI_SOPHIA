@@ -1,8 +1,9 @@
 # Figure 4: stable-reference contrasts at BMI 30 kg/m2.
 # The asymmetry panel is the gain-versus-stable difference minus the
 # stable-versus-loss difference.
-# Input: data/cross_cohort/stable_contrasts_common_grid.csv (script 39).
+# Input: results/cross_cohort/stable_contrasts_common_grid.csv (script 39).
 # Output figure: stable_reference.png in plots/.
+source("src/project_setup.R")
 library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
 library(patchwork)
@@ -18,7 +19,7 @@ trait_order <- c(
 )
 stopifnot(setequal(trait_order, names(trait_labels)))
 common <- readr::read_csv(
-  file.path(project_dir, "data", "cross_cohort",
+  file.path(project_paths$cross_cohort,
             "stable_contrasts_common_grid.csv"),
   show_col_types = FALSE
 ) |>

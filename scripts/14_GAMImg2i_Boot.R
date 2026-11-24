@@ -1,17 +1,18 @@
 # Bootstrap
 
 ## Libraries
+source("src/project_setup.R")
 library(readr)
 library(dplyr)
 library(tidyr)
 library(purrr)
 
 ## Working directory
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 ## Data
 slopebmregdf_2i <- readRDS(
-  file.path(projfld, "data", "UKB", "processed_data", "slopebmregdf_2i.rds")
+  file.path(project_paths$ukb_processed, "slopebmregdf_2i.rds")
 )
 
 ## Covariates
@@ -115,8 +116,7 @@ slopebmregdf_2i |>
             )
           ) |>
           write_tsv(
-            file.path(
-              projfld, "data", "UKB", "processed_data", "bootstrap_2i",
+            file.path(project_paths$ukb_processed, "bootstrap_2i",
               paste0("MSEDAT_", sx, "_", trt, ".tsv")
             )
           )
@@ -148,8 +148,7 @@ slopebmregdf_2i |>
           ) |>
           unnest(modpred) |>
           write_tsv(
-            file.path(
-              projfld, "data", "UKB", "processed_data", "bootstrap_2i",
+            file.path(project_paths$ukb_processed, "bootstrap_2i",
               paste0("PREDS_", sx, "_", trt, ".tsv")
             )
           )

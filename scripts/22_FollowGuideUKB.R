@@ -1,4 +1,5 @@
 # Data wrangling
+source("src/project_setup.R")
 library(readr)
 library(tibble)
 library(dplyr)
@@ -9,14 +10,14 @@ library(broom.mixed)
 library(mgcv)
 library(metagam)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA/"
+projfld <- getwd()
 
 input_table_bysex <- bind_rows(
   "rec" = readRDS(
-    file = file.path(projfld, "data", "UKB", "processed_data", "lmmtabrec.rds")
+    file = file.path(project_paths$ukb_processed, "lmmtabrec.rds")
   ),
   "2i" = readRDS(
-    file = file.path(projfld, "data", "UKB", "processed_data", "lmmtab2i.rds")
+    file = file.path(project_paths$ukb_processed, "lmmtab2i.rds")
   ),
   .id = "reftime"
 )
@@ -30,11 +31,11 @@ bmdfs <- tibble(
       ~switch(
         .x,
         "rec" = read_tsv(
-          file.path(projfld, "data", "UKB", "processed_data", "bmrec.tsv"),
+          file.path(project_paths$ukb_processed, "bmrec.tsv"),
           show_col_types = FALSE
         ),
         "2i" = read_tsv(
-          file.path(projfld, "data", "UKB", "processed_data", "img2i.tsv"),
+          file.path(project_paths$ukb_processed, "img2i.tsv"),
           show_col_types = FALSE
         )
       )
@@ -50,11 +51,11 @@ covdfs <- tibble(
       ~switch(
         .x,
         "rec" = read_tsv(
-          file.path(projfld, "data", "UKB", "processed_data", "cvrec.tsv"),
+          file.path(project_paths$ukb_processed, "cvrec.tsv"),
           show_col_types = FALSE
         ),
         "2i" = read_tsv(
-          file.path(projfld, "data", "UKB", "processed_data", "cv2i.tsv"),
+          file.path(project_paths$ukb_processed, "cv2i.tsv"),
           show_col_types = FALSE
         )
       )
@@ -110,13 +111,11 @@ regresdat <- tibble(
       ~switch(
         .x,
         "rec" = readRDS(
-          file = file.path(
-            projfld, "data", "UKB", "processed_data", "slopebmregdf.rds"
+          file = file.path(project_paths$ukb_processed, "slopebmregdf.rds"
           )
         ),
         "2i" = readRDS(
-          file = file.path(
-            projfld, "data", "UKB", "processed_data", "slopebmregdf_2i.rds"
+          file = file.path(project_paths$ukb_processed, "slopebmregdf_2i.rds"
           )
         )
       )
@@ -247,8 +246,5 @@ cohort <- "UKB"
 # Saving submission file
 saveRDS(
   resultdf,
-  file = file.path(
-    projfld, "data", cohort,
-    paste0("resultdf_", cohort, ".rds")
-  )
+  file = cohort_files[[cohort]]
 )

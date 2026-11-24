@@ -1,9 +1,10 @@
 # Export paired sensitivity agreement; avoid judging similarity from images.
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr)
 library(purrr)
-results_dir <- file.path(getwd(), "data", "UKB", "results")
+results_dir <- file.path(project_paths$ukb_results)
 settings <- tibble(
   file = c("table_sensitivity_excluding_selected_diagnoses.csv",
            "table_strict_followup_biomarker_comparison.csv",

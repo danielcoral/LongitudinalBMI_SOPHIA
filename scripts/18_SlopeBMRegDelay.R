@@ -1,3 +1,4 @@
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
@@ -6,24 +7,24 @@ library(ggplot2)
 library(mgcv)
 library(patchwork)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 lmmtabrec <- readRDS(
-  file.path(projfld, "data", "UKB", "processed_data", "lmmtabrec.rds")
+  file.path(project_paths$ukb_processed, "lmmtabrec.rds")
 )
 
 bm1i <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "bm1i.tsv"),
+  file.path(project_paths$ukb_processed, "bm1i.tsv"),
   show_col_types = FALSE
 )
 
 cv1i <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "cv1i.tsv"),
+  file.path(project_paths$ukb_processed, "cv1i.tsv"),
   show_col_types = FALSE
 )
 
 ancestrytab <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "ancestrytab.tsv"),
+  file.path(project_paths$ukb_processed, "ancestrytab.tsv"),
   show_col_types = FALSE
 ) |>
   mutate(ancestry = factor(ancestry))
@@ -89,7 +90,7 @@ slopebmregdf_delay <- bm1i |>
 
 write_csv(
   transmute(slopebmregdf_delay, sex, trait, n = map_int(bmdf, nrow)),
-  file.path(projfld, "data", "UKB", "results", "lagged_biomarker_sample.csv")
+  file.path(project_paths$ukb_results, "lagged_biomarker_sample.csv")
 )
 
 smterms <- c(
@@ -116,7 +117,7 @@ slopebmregdf_delay <- slopebmregdf_delay |>
   )
 
 slopebmregdf <- readRDS(
-  file.path(projfld, "data", "UKB", "processed_data", "slopebmregdf.rds")
+  file.path(project_paths$ukb_processed, "slopebmregdf.rds")
 )
 
 expectdiffdf <- expand_grid(
@@ -255,15 +256,14 @@ lagged_biomarker_plot <- pdiffdf |>
   )
 
 ggsave(
-  file.path(projfld, "plots", "lagged_biomarkers.png"),
+  file.path(project_paths$plots, "lagged_biomarkers.png"),
   plot = lagged_biomarker_plot, width = 7, height = 4,
   units = "in", dpi = 300, bg = "white"
 )
 
 write_csv(
   unnest(pdiffdf, modpred),
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_lagged_biomarker_comparison.csv"
   )
 )

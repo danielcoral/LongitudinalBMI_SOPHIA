@@ -2,9 +2,10 @@
 # The slope pair is the sex-specific 25th and 75th percentile of the slope in
 # the liver-MRI sample; ratio = exp(estimate) = upper / lower quartile.
 # Nothing is refitted: the saved models are evaluated.
-# Input: data/UKB/processed_data/slopebmregdf_2ilf.rds (log liver-fat models
+# Input: data/local/processed/slopebmregdf_2ilf.rds (log liver-fat models
 #   with their data).
 # Adds age-specific contrasts to the saved liver-fat output.
+source("src/project_setup.R")
 library(mgcv)
 library(dplyr, warn.conflicts = FALSE)
 library(purrr)
@@ -14,8 +15,8 @@ source(file.path(project_dir, "src", "within_cohort_helpers.R"))
 source(file.path(project_dir, "src", "slope_contrast_helpers.R"))
 source(file.path(project_dir, "src", "liver_fat_interaction_helpers.R"))
 source(file.path(project_dir, "src", "liver_fat_quartile_helpers.R"))
-processed_dir <- file.path(project_dir, "data", "UKB", "processed_data")
-results_dir <- file.path(project_dir, "data", "UKB", "results")
+processed_dir <- file.path(project_paths$ukb_processed)
+results_dir <- file.path(project_paths$ukb_results)
 liver <- readRDS(file.path(processed_dir, "slopebmregdf_2ilf.rds")) |>
   filter(trait == "logLiverF_perc")
 stopifnot(nrow(liver) == 2)

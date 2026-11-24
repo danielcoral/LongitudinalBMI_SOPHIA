@@ -3,19 +3,22 @@
 # no slope-by-WHR interaction, then fits the same model without WHR in the
 # same participants. Compares the upper- versus lower-quartile slope contrast
 # with and without WHR, and tests all slope terms once WHR is in the model.
-# Inputs: liver_fat_whr_models.rds (processed_data), plus the script-35
-#   grid and slope quartiles in liver_fat_whr_profiles.csv and
-#   liver_fat_whr_slope_contrasts.csv (results).
-# Output: liver_fat_slope_whr_adjustment.csv in data/UKB/results/.
+# Inputs: liver_fat_whr_models.rds (data/local/processed/), plus the
+#   script-35 grid and slope quartiles in liver_fat_whr_profiles.csv and
+#   liver_fat_whr_slope_contrasts.csv (results/ukb/).
+# Output: liver_fat_slope_whr_adjustment.csv in results/ukb/.
 # dplyr resolves column names through non-standard evaluation.
 # nolint start: object_usage_linter.
+source("src/project_setup.R")
 library(mgcv)
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 source("src/liver_fat_interaction_helpers.R")
 
-results_dir <- "data/UKB/results"
-fits <- readRDS("data/UKB/processed_data/liver_fat_whr_models.rds")
+results_dir <- project_paths$ukb_results
+fits <- readRDS(file.path(
+  project_paths$ukb_processed, "liver_fat_whr_models.rds"
+))
 # Script-35 profiles: BMI 25/30/35 at age 60 with fixed covariate values.
 # Without a slope-by-WHR term the slope contrast does not depend on WHR, so
 # the median-WHR profile is used only to complete the prediction rows.

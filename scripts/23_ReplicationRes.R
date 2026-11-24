@@ -1,9 +1,10 @@
 # Cross-cohort descriptive summaries from the saved cohort result files.
-# Inputs: data/{ALSPAC,RS,UKB}/resultdf_*.rds.
+# Inputs: cohort_results files in config/config.yaml.
 # Outputs: plots/cross_cohort_biomarker_distributions.png and
 #   plots/cross_cohort_comorbidities.png; table_cross_cohort_sample_sizes.csv
-#   and table_cross_cohort_biomarker_distributions.csv in data/UKB/results/.
+#   and table_cross_cohort_biomarker_distributions.csv in results/ukb/.
 # Slope contrasts across cohorts are in 36_WithinCohortContrasts.R.
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
@@ -12,7 +13,7 @@ library(ggplot2)
 
 options(repr.plot.res = 300)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 restab <- expand_grid(
   cohort = c("ALSPAC", "RS", "UKB")
@@ -21,10 +22,7 @@ restab <- expand_grid(
     resdf = map(
       cohort,
       ~readRDS(
-        file.path(
-          projfld, "data", .x,
-          paste0("resultdf_", .x, ".rds")
-        )
+        cohort_files[[.x]]
       )
     )
   )
@@ -287,26 +285,24 @@ cohort_comorbidities_plot <- restabl |>
 
 cohort_biomarker_distributions_plot
 ggsave(
-  file.path(projfld, "plots", "cross_cohort_biomarker_distributions.png"),
+  file.path(project_paths$plots, "cross_cohort_biomarker_distributions.png"),
   plot = cohort_biomarker_distributions_plot, width = 5, height = 4,
   units = "in", dpi = 300, bg = "white"
 )
 cohort_comorbidities_plot
 ggsave(
-  file.path(projfld, "plots", "cross_cohort_comorbidities.png"),
+  file.path(project_paths$plots, "cross_cohort_comorbidities.png"),
   plot = cohort_comorbidities_plot, width = 5, height = 4,
   units = "in", dpi = 300, bg = "white"
 )
 write_csv(
   totalss,
-  file.path(
-    projfld, "data", "UKB", "results", "table_cross_cohort_sample_sizes.csv"
+  file.path(project_paths$ukb_results, "table_cross_cohort_sample_sizes.csv"
   )
 )
 write_csv(
   outbms,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_cross_cohort_biomarker_distributions.csv"
   )
 )

@@ -1,4 +1,5 @@
 # Run from the project root after receiving all three cohort result files.
+source("src/project_setup.R")
 library(mgcv)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr)
@@ -7,9 +8,7 @@ library(purrr)
 project_dir <- getwd()
 source(file.path(project_dir, "src", "matched_cohort_helpers.R"))
 cohorts <- c("ALSPAC", "RS", "UKB")
-input_files <- file.path(
-  project_dir, "data", cohorts, paste0("resultdf_", cohorts, ".rds")
-)
+input_files <- cohort_files[cohorts]
 if (!all(file.exists(input_files))) {
   stop("Missing cohort result files: ",
        paste(input_files[!file.exists(input_files)], collapse = ", "))
@@ -23,7 +22,7 @@ result_table <- purrr::map2_dfr(
   }
 )
 contrasts <- matched_cohort_contrasts(result_table)
-output_dir <- file.path(project_dir, "data", "cross_cohort")
+output_dir <- file.path(project_paths$cross_cohort)
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 saveRDS(contrasts, file.path(output_dir, "matched_cohort_contrasts.rds"))
 readr::write_csv(

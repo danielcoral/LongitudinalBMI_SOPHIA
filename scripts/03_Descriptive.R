@@ -1,4 +1,5 @@
 # Libraries
+source("src/project_setup.R")
 library(readr)
 library(dplyr)
 library(tidyr)
@@ -6,14 +7,13 @@ library(purrr)
 library(survival)
 
 # Project folder
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 # Total number of individuals available
 totaln <- system(
   paste(
     "wc -l",
-    file.path(
-      projfld, "data", "UKB", "raw_data",
+    file.path(project_paths$ukb_raw,
       "Weight_Recruitment_participant.csv"
     )
   ),
@@ -28,8 +28,7 @@ descriptext <- paste(
 totalwgp <- system(
   paste(
     "cut -f 1",
-    file.path(
-      projfld, "data", "UKB", "raw_data",
+    file.path(project_paths$ukb_raw,
       "OnlyWeights_gp.tsv"
     ), "| tail -n +2 |",
     "sort -u | wc -l"
@@ -43,7 +42,7 @@ descriptext <- c(
 
 # Longitudinal BMI data until recruitment
 bmilongrec <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "bmilongrec.tsv"),
+  file.path(project_paths$ukb_processed, "bmilongrec.tsv"),
   show_col_types = FALSE
 )
 
@@ -75,17 +74,17 @@ nrow(ind_df)
 
 # Biomarker data at recruitment
 bmrec <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "bmrec.tsv"),
+  file.path(project_paths$ukb_processed, "bmrec.tsv"),
   show_col_types = FALSE
 )
 
 # Covariate data at recruitment
 cvrec <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "cvrec.tsv"),
+  file.path(project_paths$ukb_processed, "cvrec.tsv"),
   show_col_types = FALSE
 )
 ancestrytab <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "ancestrytab.tsv"),
+  file.path(project_paths$ukb_processed, "ancestrytab.tsv"),
   show_col_types = FALSE
 )
 
@@ -144,7 +143,7 @@ descriptable <- ind_df |>
   )
 write_tsv(
   descriptable,
-  file.path(projfld, "data", "UKB", "results", "descriptable.tsv")
+  file.path(project_paths$ukb_results, "descriptable.tsv")
 )
 
 # Follow-up time summary
@@ -233,12 +232,12 @@ descriptext <- c(
 
 write_lines(
   descriptext,
-  file.path(projfld, "data", "UKB", "results", "descriptext.txt")
+  file.path(project_paths$ukb_results, "descriptext.txt")
 )
 
 # Survival data after recruitment
 outdat <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "outdat.tsv"),
+  file.path(project_paths$ukb_processed, "outdat.tsv"),
   show_col_types = FALSE
 )
 
@@ -254,13 +253,12 @@ sumoutdat <- outdat |>
   )
 write_tsv(
   sumoutdat,
-  file.path(projfld, "data", "UKB", "results", "sumoutdat.tsv")
+  file.path(project_paths$ukb_results, "sumoutdat.tsv")
 )
 
 write_csv(
   descriptable,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "participant_characteristics.csv"
   )
 )
@@ -279,15 +277,13 @@ trajectory_followup <- bind_rows(
   rename(q25 = nmeas_q25, median = nmeas_median, q75 = nmeas_q75)
 write_csv(
   trajectory_followup,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "trajectory_followup.csv"
   )
 )
 write_csv(
   sumoutdat,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "outcome_summary.csv"
   )
 )

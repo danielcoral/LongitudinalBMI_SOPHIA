@@ -1,11 +1,12 @@
 # Support of the within-cohort contrasts: age, BMI and slope distributions.
-# Inputs: data/{ALSPAC,RS,UKB}/resultdf_*.rds (quantile summaries);
-#   data/UKB/processed_data/lmmtabrec.rds and lmmtab2i.rds (individual UK
+# Inputs: cohort_results files in config/config.yaml (quantile summaries);
+#   data/local/processed/lmmtabrec.rds and lmmtab2i.rds (individual UK
 #   Biobank slopes; no individual-level ALSPAC or Rotterdam files are kept);
-#   data/UKB/results/table_supp_08_cohorts.csv and
-#   data/UKB/results/table_supp_09_slope_quantiles.csv (cross-checks).
-# Output: data/cross_cohort/slope_support_summary.csv (one row per cohort,
+#   results/ukb/table_supp_08_cohorts.csv and
+#   results/ukb/table_supp_09_slope_quantiles.csv (cross-checks).
+# Output: results/cross_cohort/slope_support_summary.csv (one row per cohort,
 #   sex and visit).
+source("src/project_setup.R")
 library(dplyr, warn.conflicts = FALSE)
 library(purrr)
 
@@ -46,7 +47,7 @@ support <- pmap_dfr(
 # Shares of individual UK Biobank slopes beyond +-0.5 kg/m2/year. The
 # denominator n_slope is everyone with a slope estimate, so it can exceed the
 # model-sample n slightly.
-processed_dir <- file.path(project_dir, "data", "UKB", "processed_data")
+processed_dir <- file.path(project_paths$ukb_processed)
 shares <- imap_dfr(
   c(rec = "lmmtabrec.rds", `2i` = "lmmtab2i.rds"),
   function(file, visit) {
@@ -63,7 +64,7 @@ shares <- imap_dfr(
 support <- left_join(support, shares, by = c("cohort", "reftime", "sex"))
 
 # Cross-check with the cohort tables (same source, so differences are errors).
-results_dir <- file.path(project_dir, "data", "UKB", "results")
+results_dir <- file.path(project_paths$ukb_results)
 table_8 <- readr::read_csv(
   file.path(results_dir, "table_supp_08_cohorts.csv"), show_col_types = FALSE
 )
@@ -82,6 +83,6 @@ stopifnot(
   max(abs(check_9$slope_p75 - check_9$slope_p75_t9)) < 1e-10
 )
 
-output_dir <- file.path(project_dir, "data", "cross_cohort")
+output_dir <- file.path(project_paths$cross_cohort)
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 readr::write_csv(support, file.path(output_dir, "slope_support_summary.csv"))

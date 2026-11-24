@@ -1,16 +1,57 @@
-.gitignore
-data/
-logfiles/
-html/
-plots/
-subfiles/
-paper/
-presentations/
-.nanocoder/
-coverletter/
-trash/
+# Private agent instructions, profiles, tooling and maintenance tests.
 AGENTS.md
-TODO.md
-Rplots.pdf
-tests/
+AGENTS.local.md
 STRUCTURE.md
+.nanocoder/
+.codex/
+.github/
+temp/*
+handoffs/README.md
+docs/
+
+# Personal editor settings.
+/.vscode/
+
+# Config
+.config/
+
+# Ignore rules do not untrack files already committed.
+# Publish a pipeline agent only by explicit choice, with its dependencies.
+# To allow selected files, ignore directory contents instead of the directory
+# and add ! exceptions, keeping every parent directory traversable.
+
+# Local runtime and credentials.
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+.snakemake/
+
+# Data files
+data/
+
+# HTCondor files
+subfiles/
+logfiles/
+
+# Paper directory
+paper/
+
+# Presentations
+presentations/
+
+# Plots
+plots/
+
+# Results
+results/
+
+# Trash
+trash/
+
+# Preserve project-specific private files and checks.
+.gitignore
+TODO.md
+tests/
+Rplots.pdf

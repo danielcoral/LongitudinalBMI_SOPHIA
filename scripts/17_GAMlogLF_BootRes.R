@@ -1,3 +1,4 @@
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
@@ -8,10 +9,10 @@ library(patchwork)
 
 options(repr.plot.res = 300)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 slopebmregdf_2ilf <- readRDS(
-  file.path(projfld, "data", "UKB", "processed_data", "slopebmregdf_2ilf.rds")
+  file.path(project_paths$ukb_processed, "slopebmregdf_2ilf.rds")
 )
 
 bootdf <- slopebmregdf_2ilf |>
@@ -21,8 +22,7 @@ bootdf <- slopebmregdf_2ilf |>
       sex, trait,
       function(sx, trt) {
         read_tsv(
-          file.path(
-            projfld, "data", "UKB", "processed_data", "bootstrap_2i",
+          file.path(project_paths$ukb_processed, "bootstrap_2i",
             paste0("PREDS_", sx, "_", trt, ".tsv")
           ),
           show_col_types = FALSE
@@ -143,8 +143,7 @@ bootmse <- slopebmregdf_2ilf |>
       sex, trait,
       function(sx, trt){
         read_tsv(
-          file.path(
-            projfld, "data", "UKB", "processed_data", "bootstrap_2i",
+          file.path(project_paths$ukb_processed, "bootstrap_2i",
             paste0("MSEDAT_", sx, "_", trt, ".tsv")
           ),
           show_col_types = FALSE
@@ -167,8 +166,7 @@ bootmse <- slopebmregdf_2ilf |>
 
 write_csv(
   bootdf,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_log_liver_fat_subsampling_estimates.csv"
   )
 )
@@ -186,13 +184,12 @@ log_liver_mse_plot <- bootmse |>
   labs(x = "Test/train MSE ratio", y = NULL)
 saveRDS(
   list(E = log_liver_subsampling_plot, F = log_liver_mse_plot),
-  file.path(projfld, "data", "UKB", "processed_data",
+  file.path(project_paths$ukb_processed,
             "log_liver_subsampling_panels.rds")
 )
 write_csv(
   bootmse,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_log_liver_fat_subsampling_mse.csv"
   )
 )

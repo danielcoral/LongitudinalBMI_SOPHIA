@@ -1,3 +1,4 @@
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
@@ -8,13 +9,13 @@ library(ggplot2)
 library(mgcv)
 library(patchwork)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 #-------------------------------------------------------------------------------
 # Select participants with at least three well-spaced BMI measurements
 
 bmilongrec <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "bmilongrec.tsv"),
+  file.path(project_paths$ukb_processed, "bmilongrec.tsv"),
   show_col_types = FALSE
 )
 
@@ -59,8 +60,7 @@ strict_sample_summary <- bmilongrec_strict |>
 
 write_tsv(
   bmilongrec_strict,
-  file.path(
-    projfld, "data", "UKB", "processed_data",
+  file.path(project_paths$ukb_processed,
     "bmilongrec_strict.tsv"
   )
 )
@@ -93,8 +93,7 @@ lmmtabrec_strict <- bmilongrec_strict |>
 
 saveRDS(
   lmmtabrec_strict,
-  file.path(
-    projfld, "data", "UKB", "processed_data",
+  file.path(project_paths$ukb_processed,
     "lmmtabrec_strict.rds"
   )
 )
@@ -125,22 +124,19 @@ write_lines(
     "# Average BMI trajectory (kg/m2/year; estimate and 95% CI)",
     capture.output(print(average_trajectory_strict, row.names = FALSE))
   ),
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "results_strict_followup_trajectory.txt"
   )
 )
 write_csv(
   strict_sample_summary,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_strict_followup_sample_summary.csv"
   )
 )
 write_csv(
   average_trajectory_strict,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_strict_followup_average_trajectory.csv"
   )
 )
@@ -152,8 +148,7 @@ strict_trajectory_plot <- trajectory_density_plot(
 )
 
 ggsave(
-  file.path(
-    projfld, "plots",
+  file.path(project_paths$plots,
     "strict_followup_trajectory_distribution.png"
   ),
   plot = strict_trajectory_plot,
@@ -164,15 +159,15 @@ ggsave(
 # Biomarker models in the strict-follow-up sample
 
 bmrec <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "bmrec.tsv"),
+  file.path(project_paths$ukb_processed, "bmrec.tsv"),
   show_col_types = FALSE
 )
 cvrec <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "cvrec.tsv"),
+  file.path(project_paths$ukb_processed, "cvrec.tsv"),
   show_col_types = FALSE
 )
 ancestrytab <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "ancestrytab.tsv"),
+  file.path(project_paths$ukb_processed, "ancestrytab.tsv"),
   show_col_types = FALSE
 ) |>
   mutate(ancestry = factor(ancestry))
@@ -229,8 +224,7 @@ slopebmregdf_strict <- biomarker_data |>
 
 saveRDS(
   slopebmregdf_strict,
-  file.path(
-    projfld, "data", "UKB", "processed_data",
+  file.path(project_paths$ukb_processed,
     "slopebmregdf_strict.rds"
   )
 )
@@ -238,7 +232,7 @@ saveRDS(
 # Recalculate the original estimates from the current primary models so that the
 # comparison always uses the same prediction grid and current pipeline results.
 slopebmregdf <- readRDS(
-  file.path(projfld, "data", "UKB", "processed_data", "slopebmregdf.rds")
+  file.path(project_paths$ukb_processed, "slopebmregdf.rds")
 )
 
 expectdiffdf <- expand_grid(
@@ -287,8 +281,7 @@ strict_comparison <- slopebmregdf_strict |>
 
 write_csv(
   strict_comparison,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_strict_followup_biomarker_comparison.csv"
   )
 )
@@ -380,8 +373,7 @@ strict_biomarker_comparison_plot <- strict_comparison |>
   )
 
 ggsave(
-  file.path(
-    projfld, "plots",
+  file.path(project_paths$plots,
     "strict_followup_biomarker_comparison.png"
   ),
   plot = strict_biomarker_comparison_plot,

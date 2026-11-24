@@ -22,7 +22,8 @@ trait_labels <- c(
 # Figures are drawn at 7 inches wide (print width) and 300 dpi.
 save_figure <- function(figure, name, width, height) {
   ggsave(
-    file.path("plots", name), figure, width = width, height = height,
+    file.path(project_paths$plots, name), figure,
+    width = width, height = height,
     units = "in", dpi = 300, bg = "white"
   )
   cat("Saved plots/", name, "\n", sep = "")

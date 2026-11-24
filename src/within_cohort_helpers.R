@@ -30,9 +30,7 @@ reported_age <- function(cohort, age) {
 
 load_cohort_results <- function(project_dir) {
   cohorts <- c("ALSPAC", "RS", "UKB")
-  files <- file.path(
-    project_dir, "data", cohorts, paste0("resultdf_", cohorts, ".rds")
-  )
+  files <- file.path(project_dir, cohort_files[cohorts])
   if (!all(file.exists(files))) {
     stop("Missing cohort result files: ",
          paste(files[!file.exists(files)], collapse = ", "))

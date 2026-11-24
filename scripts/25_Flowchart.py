@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import matplotlib
+import yaml
 
 # Use a noninteractive backend so the script also works on compute nodes.
 matplotlib.use("Agg")
@@ -84,7 +85,7 @@ class Box:
 
 
 # The box IDs are for connections only; the visible labels are in ``lines``.
-# Counts A/B/C were checked on 2026-10-20 against data/UKB/results/
+# Counts A/B/C were checked on 2026-10-20 against results/ukb/
 # descriptext.txt (script 03) and recounted from the raw extracts: A is all
 # rows in Weight_Recruitment_participant.csv; B is distinct IDs with any GP
 # weight record (22A..) in OnlyWeights_gp.tsv, before validity filters.
@@ -328,7 +329,10 @@ def make_figure():
 def main():
     """Write the finished figure to the plots directory as a PNG."""
 
-    output_dir = Path(__file__).resolve().parents[1] / "plots"
+    root = Path(__file__).resolve().parents[1]
+    with (root / "config/config.yaml").open() as stream:
+        output_dir = root / yaml.safe_load(stream)["paths"]["plots"]
+    output_dir.mkdir(parents=True, exist_ok=True)
     stem = output_dir / "study_flowchart"
     plt.rcParams.update({
         "font.family": "DejaVu Sans",

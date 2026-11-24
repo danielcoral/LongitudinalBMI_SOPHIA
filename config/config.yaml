@@ -1,0 +1,836 @@
+paths:
+  ukb_raw: data/local/raw
+  ukb_processed: data/local/processed
+  ukb_results: results/ukb
+  cross_cohort: results/cross_cohort
+  plots: plots
+cohort_results:
+  ALSPAC: data/external/processed/ALSPAC/resultdf_ALSPAC.rds
+  RS: data/external/processed/RS/resultdf_RS.rds
+  UKB: results/ukb/resultdf_UKB.rds
+stages:
+  stage_02:
+    script: scripts/02_DataPrep.R
+    inputs:
+    - '{ukb_raw}/Weight_Recruitment_participant.csv'
+    - '{ukb_raw}/Weight_Instance1_participant.csv'
+    - '{ukb_raw}/Weight_Instance2_participant.csv'
+    - '{ukb_raw}/OnlyWeights_gp.tsv'
+    - '{ukb_raw}/BMOut_Recruitment_participant.csv'
+    - '{ukb_raw}/BMOut_Instance1_participant.csv'
+    - '{ukb_raw}/Imaging_Instance2_participant.csv'
+    - '{ukb_raw}/GenAncestry.csv'
+    - '{ukb_raw}/Covariates_Recruitment_participant.csv'
+    - '{ukb_raw}/Covariates_Instance1_participant.csv'
+    - '{ukb_raw}/Covariates_Instance2_participant.csv'
+    - '{ukb_raw}/death.txt'
+    - '{ukb_raw}/Outcomes_participant.tsv'
+    outputs:
+    - '{ukb_processed}/bmilongrec.tsv'
+    - '{ukb_processed}/bmilong1i.tsv'
+    - '{ukb_processed}/bmilong2i.tsv'
+    - '{ukb_processed}/bmrec.tsv'
+    - '{ukb_processed}/bm1i.tsv'
+    - '{ukb_processed}/img2i.tsv'
+    - '{ukb_processed}/ancestrytab.tsv'
+    - '{ukb_processed}/cvrec.tsv'
+    - '{ukb_processed}/cv1i.tsv'
+    - '{ukb_processed}/cv2i.tsv'
+    - '{ukb_processed}/outdat.tsv'
+    threads: 1
+    mem_mb: 64000
+  stage_03:
+    script: scripts/03_Descriptive.R
+    inputs:
+    - '{ukb_processed}/bmilongrec.tsv'
+    - '{ukb_processed}/bmrec.tsv'
+    - '{ukb_processed}/cvrec.tsv'
+    - '{ukb_processed}/ancestrytab.tsv'
+    - '{ukb_processed}/outdat.tsv'
+    - '{ukb_raw}/Weight_Recruitment_participant.csv'
+    - '{ukb_raw}/OnlyWeights_gp.tsv'
+    outputs:
+    - '{ukb_results}/descriptable.tsv'
+    - '{ukb_results}/descriptext.txt'
+    - '{ukb_results}/sumoutdat.tsv'
+    - '{ukb_results}/participant_characteristics.csv'
+    - '{ukb_results}/trajectory_followup.csv'
+    - '{ukb_results}/outcome_summary.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_04:
+    script: scripts/04_Traj_rec.R
+    inputs:
+    - '{ukb_processed}/bmilongrec.tsv'
+    - '{ukb_processed}/bmrec.tsv'
+    outputs:
+    - '{ukb_processed}/lmmtabrec.rds'
+    - '{ukb_results}/results_primary_trajectory.txt'
+    - '{ukb_results}/table_primary_average_trajectory.csv'
+    - '{ukb_results}/table_primary_trajectory_correlations.csv'
+    - '{plots}/trajectory_correlates.png'
+    threads: 1
+    mem_mb: 64000
+  stage_05:
+    script: scripts/05_GAMRec.R
+    inputs:
+    - '{ukb_processed}/lmmtabrec.rds'
+    - '{ukb_processed}/bmrec.tsv'
+    - '{ukb_processed}/cvrec.tsv'
+    - '{ukb_processed}/ancestrytab.tsv'
+    outputs:
+    - '{ukb_processed}/slopebmregdf.rds'
+    - '{ukb_processed}/slopebmregres.tsv'
+    - '{ukb_processed}/modelkcheck.tsv'
+    - '{ukb_processed}/varexpdf.tsv'
+    - '{ukb_processed}/addedvalslope.tsv'
+    - '{ukb_processed}/addedvalslopeint.tsv'
+    - '{plots}/primary_biomarker_predictions.png'
+    - '{ukb_results}/table_primary_model_variance_explained.csv'
+    - '{ukb_results}/table_primary_slope_added_value.csv'
+    - '{ukb_results}/table_primary_interaction_added_value.csv'
+    - '{ukb_results}/table_primary_variance_decomposition.csv'
+    - '{ukb_results}/table_primary_rapid_gain_vs_loss.csv'
+    - '{ukb_results}/results_primary_biomarker_models.txt'
+    - '{ukb_processed}/figure_panels_05_GAMRec.rds'
+    threads: 1
+    mem_mb: 64000
+  stage_06:
+    script: scripts/06_GAMRec_Boot.R
+    inputs:
+    - '{ukb_processed}/slopebmregdf.rds'
+    outputs:
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_ALT.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_AST.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_CRP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_DBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_GGT.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_GLU.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_HDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_LDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_SBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_SCR.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_TG.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_ALT.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_AST.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_CRP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_DBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_GGT.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_GLU.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_HDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_LDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_SBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_SCR.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_TG.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_ALT.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_AST.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_CRP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_DBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_GGT.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_GLU.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_HDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_LDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_SBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_SCR.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_TG.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_ALT.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_AST.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_CRP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_DBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_GGT.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_GLU.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_HDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_LDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_SBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_SCR.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_TG.tsv'
+    threads: 4
+    mem_mb: 64000
+  stage_07:
+    script: scripts/07_GAMRec_BootRes.R
+    inputs:
+    - '{ukb_processed}/slopebmregdf.rds'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_ALT.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_AST.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_CRP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_DBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_GGT.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_GLU.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_HDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_LDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_SBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_SCR.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_TG.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_ALT.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_AST.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_CRP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_DBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_GGT.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_GLU.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_HDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_LDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_SBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_SCR.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_TG.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_ALT.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_AST.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_CRP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_DBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_GGT.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_GLU.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_HDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_LDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_SBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_SCR.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_TG.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_ALT.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_AST.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_CRP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_DBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_GGT.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_GLU.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_HDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_LDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_SBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_SCR.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_TG.tsv'
+    outputs:
+    - '{plots}/primary_subsampling_estimates.png'
+    - '{ukb_results}/table_primary_subsampling_estimates.csv'
+    - '{plots}/primary_subsampling_mse.png'
+    - '{ukb_results}/table_primary_subsampling_mse.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_08:
+    script: scripts/08_NoDxRec.R
+    inputs:
+    - '{ukb_processed}/cvrec.tsv'
+    - '{ukb_processed}/slopebmregdf.rds'
+    outputs:
+    - '{plots}/excluding_selected_diagnoses.png'
+    - '{ukb_results}/table_sensitivity_excluding_selected_diagnoses.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_09:
+    script: scripts/09_StrictFollowupRec.R
+    inputs:
+    - '{ukb_processed}/bmilongrec.tsv'
+    - '{ukb_processed}/bmrec.tsv'
+    - '{ukb_processed}/cvrec.tsv'
+    - '{ukb_processed}/ancestrytab.tsv'
+    - '{ukb_processed}/slopebmregdf.rds'
+    outputs:
+    - '{ukb_processed}/bmilongrec_strict.tsv'
+    - '{ukb_processed}/lmmtabrec_strict.rds'
+    - '{ukb_results}/results_strict_followup_trajectory.txt'
+    - '{ukb_results}/table_strict_followup_sample_summary.csv'
+    - '{ukb_results}/table_strict_followup_average_trajectory.csv'
+    - '{ukb_processed}/slopebmregdf_strict.rds'
+    - '{ukb_results}/table_strict_followup_biomarker_comparison.csv'
+    - '{plots}/strict_followup_biomarker_comparison.png'
+    threads: 1
+    mem_mb: 64000
+  stage_10:
+    script: scripts/10_SecondVisitRec.R
+    inputs:
+    - '{ukb_processed}/bmilong1i.tsv'
+    - '{ukb_processed}/bm1i.tsv'
+    - '{ukb_processed}/cv1i.tsv'
+    - '{ukb_processed}/ancestrytab.tsv'
+    - '{ukb_processed}/slopebmregdf.rds'
+    outputs:
+    - '{ukb_processed}/lmmtab1i.rds'
+    - '{ukb_results}/results_second_visit_trajectory.txt'
+    - '{ukb_results}/table_second_visit_sample_summary.csv'
+    - '{ukb_results}/table_second_visit_average_trajectory.csv'
+    - '{ukb_processed}/slopebmregdf_1i.rds'
+    - '{ukb_results}/table_second_visit_biomarker_comparison.csv'
+    - '{plots}/second_visit_biomarker_comparison.png'
+    threads: 1
+    mem_mb: 64000
+  stage_11:
+    script: scripts/11_Traj_Img2i.R
+    inputs:
+    - '{ukb_processed}/bmilong2i.tsv'
+    outputs:
+    - '{ukb_processed}/lmmtab2i.rds'
+    - '{ukb_results}/results_imaging_trajectory.txt'
+    - '{ukb_results}/table_imaging_average_trajectory.csv'
+    - '{plots}/imaging_trajectory_distribution.png'
+    threads: 1
+    mem_mb: 64000
+  stage_12:
+    script: scripts/12_GAMImg2i.R
+    inputs:
+    - '{ukb_processed}/lmmtab2i.rds'
+    - '{ukb_processed}/img2i.tsv'
+    - '{ukb_processed}/cv2i.tsv'
+    - '{ukb_processed}/ancestrytab.tsv'
+    outputs:
+    - '{ukb_processed}/slopebmregdf_2i.rds'
+    - '{ukb_processed}/addedvalslope_2i.tsv'
+    - '{plots}/imaging_predictions.png'
+    - '{ukb_results}/table_imaging_model_variance_explained.csv'
+    - '{ukb_results}/imaging_slope_added_value.csv'
+    - '{ukb_results}/imaging_interaction_added_value.csv'
+    - '{ukb_results}/table_imaging_variance_decomposition.csv'
+    - '{ukb_results}/table_imaging_rapid_gain_vs_loss.csv'
+    - '{ukb_results}/results_imaging_models.txt'
+    - '{ukb_processed}/figure_panels_12_GAMImg2i.rds'
+    threads: 1
+    mem_mb: 64000
+  stage_13:
+    script: scripts/13_GAMlogLF.R
+    inputs:
+    - '{ukb_processed}/lmmtab2i.rds'
+    - '{ukb_processed}/img2i.tsv'
+    - '{ukb_processed}/cv2i.tsv'
+    - '{ukb_processed}/ancestrytab.tsv'
+    - '{ukb_processed}/slopebmregdf_2i.rds'
+    outputs:
+    - '{plots}/liver_fat_distribution.png'
+    - '{ukb_processed}/slopebmregdf_2ilf.rds'
+    - '{ukb_processed}/addedvalslope_2ilf.tsv'
+    - '{ukb_processed}/log_liver_panels.rds'
+    - '{ukb_results}/table_log_liver_fat_variance_explained.csv'
+    - '{ukb_results}/table_log_liver_fat_slope_added_value.csv'
+    - '{ukb_results}/table_log_liver_fat_interaction_added_value.csv'
+    - '{ukb_results}/table_log_liver_fat_rapid_gain_vs_loss.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_14:
+    script: scripts/14_GAMImg2i_Boot.R
+    inputs:
+    - '{ukb_processed}/slopebmregdf_2i.rds'
+    outputs:
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_AndF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_ArmsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_BF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_GynF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_LegsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_TrunkF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_AndF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_ArmsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_BF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_GynF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_LegsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_TrunkF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_AndF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_ArmsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_BF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_GynF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_LegsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_TrunkF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_AndF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_ArmsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_BF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_GynF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_LegsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_TrunkF_perc.tsv'
+    threads: 4
+    mem_mb: 64000
+  stage_15:
+    script: scripts/15_GAMImg2i_BootRes.R
+    inputs:
+    - '{ukb_processed}/slopebmregdf_2i.rds'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_AndF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_ArmsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_BF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_GynF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_LegsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_TrunkF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_AndF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_ArmsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_BF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_GynF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_LegsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_TrunkF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_AndF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_ArmsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_BF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_GynF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_LegsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_TrunkF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_AndF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_ArmsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_BF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_GynF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_LegsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_TrunkF_perc.tsv'
+    outputs:
+    - '{plots}/imaging_subsampling_estimates.png'
+    - '{ukb_results}/table_imaging_subsampling_estimates.csv'
+    - '{plots}/imaging_subsampling_mse.png'
+    - '{ukb_results}/table_imaging_subsampling_mse.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_16:
+    script: scripts/16_GAMlogLF_Boot.R
+    inputs:
+    - '{ukb_processed}/slopebmregdf_2ilf.rds'
+    outputs:
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_logLiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_logLiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_logLiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_logLiverF_perc.tsv'
+    threads: 4
+    mem_mb: 64000
+  stage_17:
+    script: scripts/17_GAMlogLF_BootRes.R
+    inputs:
+    - '{ukb_processed}/slopebmregdf_2ilf.rds'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_logLiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_logLiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_logLiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_logLiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_LiverF_perc.tsv'
+    outputs:
+    - '{ukb_results}/table_log_liver_fat_subsampling_estimates.csv'
+    - '{ukb_processed}/log_liver_subsampling_panels.rds'
+    - '{ukb_results}/table_log_liver_fat_subsampling_mse.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_18:
+    script: scripts/18_SlopeBMRegDelay.R
+    inputs:
+    - '{ukb_processed}/lmmtabrec.rds'
+    - '{ukb_processed}/bm1i.tsv'
+    - '{ukb_processed}/cv1i.tsv'
+    - '{ukb_processed}/ancestrytab.tsv'
+    - '{ukb_processed}/slopebmregdf.rds'
+    outputs:
+    - '{ukb_results}/lagged_biomarker_sample.csv'
+    - '{plots}/lagged_biomarkers.png'
+    - '{ukb_results}/table_lagged_biomarker_comparison.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_19:
+    script: scripts/19_SlopeDxReg.R
+    inputs:
+    - '{ukb_processed}/lmmtabrec.rds'
+    - '{ukb_processed}/bmrec.tsv'
+    - '{ukb_processed}/cvrec.tsv'
+    - '{ukb_processed}/ancestrytab.tsv'
+    - '{ukb_processed}/outdat.tsv'
+    outputs:
+    - '{ukb_processed}/plot_marginal_outcomes.rds'
+    - '{ukb_results}/outcome_slope_tests.csv'
+    - '{ukb_processed}/survival_models_current.rds'
+    - '{ukb_results}/stroke_concordance.csv'
+    - '{plots}/stroke_calibration.png'
+    - '{ukb_results}/table_stroke_calibration.csv'
+    - '{ukb_processed}/plot_adjusted_outcomes.rds'
+    - '{ukb_results}/table_incident_outcomes_marginal_quintiles.csv'
+    - '{ukb_results}/table_incident_outcomes_adjusted_contrasts.csv'
+    - '{plots}/stroke_decision_curves.png'
+    - '{ukb_results}/table_stroke_decision_curves.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_20:
+    script: scripts/20_RCTComp.R
+    inputs:
+    - '{ukb_processed}/slopebmregdf.rds'
+    - '{ukb_processed}/slopebmregdf_2i.rds'
+    outputs:
+    - '{ukb_results}/dpp_parameters.csv'
+    - '{ukb_processed}/plot_dpp_comparison.rds'
+    - '{ukb_results}/table_dpp_comparison.csv'
+    - '{ukb_results}/results_dpp_comparison.txt'
+    threads: 1
+    mem_mb: 64000
+  stage_22:
+    script: scripts/22_FollowGuideUKB.R
+    inputs:
+    - '{ukb_processed}/lmmtabrec.rds'
+    - '{ukb_processed}/lmmtab2i.rds'
+    - '{ukb_processed}/bmrec.tsv'
+    - '{ukb_processed}/img2i.tsv'
+    - '{ukb_processed}/cvrec.tsv'
+    - '{ukb_processed}/cv2i.tsv'
+    - '{ukb_processed}/slopebmregdf.rds'
+    - '{ukb_processed}/slopebmregdf_2i.rds'
+    outputs:
+    - '{UKB}'
+    threads: 1
+    mem_mb: 64000
+  stage_23:
+    script: scripts/23_ReplicationRes.R
+    inputs:
+    - '{ALSPAC}'
+    - '{RS}'
+    - '{UKB}'
+    outputs:
+    - '{plots}/cross_cohort_biomarker_distributions.png'
+    - '{plots}/cross_cohort_comorbidities.png'
+    - '{ukb_results}/table_cross_cohort_sample_sizes.csv'
+    - '{ukb_results}/table_cross_cohort_biomarker_distributions.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_24:
+    script: scripts/24_AssembleOutcomesSummary.R
+    inputs:
+    - '{ukb_processed}/plot_marginal_outcomes.rds'
+    - '{ukb_processed}/plot_adjusted_outcomes.rds'
+    - '{ukb_processed}/plot_dpp_comparison.rds'
+    outputs:
+    - '{plots}/outcomes_dpp_summary.png'
+    threads: 1
+    mem_mb: 64000
+  stage_27:
+    script: scripts/27_MatchedCohortContrasts.R
+    inputs:
+    - '{ALSPAC}'
+    - '{RS}'
+    - '{UKB}'
+    outputs:
+    - '{cross_cohort}/matched_cohort_contrasts.rds'
+    - '{cross_cohort}/matched_cohort_contrasts.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_28:
+    script: scripts/28_PlotMatchedCohorts.R
+    inputs:
+    - '{cross_cohort}/matched_cohort_contrasts.rds'
+    outputs:
+    - '{plots}/matched_alspac_ukb.png'
+    - '{plots}/matched_rs_ukb.png'
+    threads: 1
+    mem_mb: 64000
+  stage_29:
+    script: scripts/29_ExportManuscriptNumbers.R
+    inputs:
+    - '{UKB}'
+    - '{ukb_results}/table_primary_rapid_gain_vs_loss.csv'
+    - '{ukb_raw}/Weight_Recruitment_participant.csv'
+    - '{ukb_raw}/Weight_Instance1_participant.csv'
+    - '{ukb_processed}/bm1i.tsv'
+    - '{ukb_processed}/lmmtabrec.rds'
+    - '{ukb_processed}/survival_models_current.rds'
+    - '{ALSPAC}'
+    - '{RS}'
+    - '{ukb_processed}/lmmtabrec_strict.rds'
+    - '{ukb_processed}/lmmtab1i.rds'
+    - '{ukb_processed}/lmmtab2i.rds'
+    - '{ukb_processed}/slopebmregdf.rds'
+    - '{ukb_processed}/slopebmregdf_2i.rds'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_ALT.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_AST.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_CRP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_DBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_GGT.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_GLU.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_HDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_LDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_SBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_SCR.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Female_TG.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_ALT.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_AST.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_CRP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_DBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_GGT.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_GLU.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_HDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_LDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_SBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_SCR.tsv'
+    - '{ukb_processed}/bootstrap_rec/MSEDAT_Male_TG.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_ALT.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_AST.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_CRP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_DBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_GGT.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_GLU.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_HDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_LDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_SBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_SCR.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Female_TG.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_ALT.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_AST.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_CRP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_DBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_GGT.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_GLU.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_HDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_LDL.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_SBP.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_SCR.tsv'
+    - '{ukb_processed}/bootstrap_rec/PREDS_Male_TG.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_AndF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_ArmsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_BF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_GynF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_LegsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_TrunkF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_AndF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_ArmsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_BF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_GynF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_LegsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_TrunkF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_AndF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_ArmsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_BF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_GynF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_LegsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_TrunkF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_AndF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_ArmsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_BF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_GynF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_LegsF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_LiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_TrunkF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Female_logLiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/MSEDAT_Male_logLiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Female_logLiverF_perc.tsv'
+    - '{ukb_processed}/bootstrap_2i/PREDS_Male_logLiverF_perc.tsv'
+    - paper/manuscript.md
+    - paper/main_figs.md
+    - paper/supp_tables.md
+    - paper/suppfigsmap.md
+    outputs:
+    - '{ukb_results}/table_supp_10_ranges.csv'
+    - '{ukb_results}/manuscript_trajectories.csv'
+    - '{ukb_results}/table_supp_08_cohorts.csv'
+    - '{ukb_results}/table_supp_09_slope_quantiles.csv'
+    - '{ukb_results}/manuscript_model_fit.csv'
+    - '{ukb_results}/imaging_variance_averages.csv'
+    - '{ukb_results}/bootstrap_inventory.csv'
+    - '{ukb_results}/primary_contrast_summary.csv'
+    - '{ukb_results}/lagged_biomarker_delay.csv'
+    - '{ukb_results}/survival_model_samples.csv'
+    - '{ukb_results}/manuscript_output_references.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_31:
+    script: scripts/31_AssembleSavedFigures.R
+    inputs:
+    - '{ukb_processed}/figure_panels_05_GAMRec.rds'
+    - '{ukb_processed}/figure_panels_12_GAMImg2i.rds'
+    - '{ukb_processed}/log_liver_panels.rds'
+    - '{ukb_processed}/log_liver_subsampling_panels.rds'
+    - '{ukb_processed}/lmmtabrec_strict.rds'
+    - '{ukb_processed}/lmmtab1i.rds'
+    outputs:
+    - '{plots}/primary_biomarkers.png'
+    - '{plots}/imaging.png'
+    - '{plots}/log_liver_fat_complete.png'
+    - '{plots}/strict_followup_trajectory_distribution.png'
+    - '{plots}/second_visit_trajectory_distribution.png'
+    threads: 1
+    mem_mb: 64000
+  stage_32:
+    script: scripts/32_SummarizeSensitivityAgreement.R
+    inputs:
+    - '{ukb_results}/table_sensitivity_excluding_selected_diagnoses.csv'
+    - '{ukb_results}/table_strict_followup_biomarker_comparison.csv'
+    - '{ukb_results}/table_second_visit_biomarker_comparison.csv'
+    outputs:
+    - '{ukb_results}/sensitivity_agreement_summary.csv'
+    - '{ukb_results}/sensitivity_paired_nodx.csv'
+    - '{ukb_results}/sensitivity_paired_strict.csv'
+    - '{ukb_results}/sensitivity_paired_secondvisit.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_33:
+    script: scripts/33_GainVsStableContrasts.R
+    inputs:
+    - '{ukb_processed}/slopebmregdf.rds'
+    - '{ukb_processed}/slopebmregdf_2i.rds'
+    - '{ukb_processed}/slopebmregdf_2ilf.rds'
+    - '{ukb_results}/table_primary_rapid_gain_vs_loss.csv'
+    - '{ukb_results}/table_imaging_rapid_gain_vs_loss.csv'
+    - '{ukb_results}/table_log_liver_fat_rapid_gain_vs_loss.csv'
+    outputs:
+    - '{ukb_results}/slope_reference_contrasts.csv'
+    - '{ukb_results}/stable_reference_legacy_hashes.csv'
+    - '{ukb_results}/table_primary_gain_vs_stable.csv'
+    - '{ukb_results}/table_imaging_gain_vs_stable.csv'
+    - '{ukb_results}/table_log_liver_fat_gain_vs_stable.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_34:
+    script: scripts/34_SummarizeSlopeAsymmetry.R
+    inputs:
+    - '{ukb_results}/slope_reference_contrasts.csv'
+    outputs:
+    - '{ukb_results}/slope_asymmetry_summary.csv'
+    - '{ukb_results}/slope_asymmetry_focus.csv'
+    - '{ukb_results}/slope_asymmetry_counts.csv'
+    - '{ukb_results}/results_slope_asymmetry.txt'
+    - '{plots}/gain_vs_stable.png'
+    - '{plots}/gain_vs_stable_imaging.png'
+    - '{plots}/gain_vs_stable_log_liver_fat.png'
+    threads: 1
+    mem_mb: 64000
+  stage_35:
+    script: scripts/35_LiverFatWhrInteraction.R
+    inputs:
+    - '{ukb_processed}/slopebmregdf_2ilf.rds'
+    - '{ukb_raw}/WaistHip_Instance2.tsv'
+    outputs:
+    - '{ukb_processed}/liver_fat_whr_models.rds'
+    - '{ukb_results}/liver_fat_whr_tests.csv'
+    - '{ukb_results}/liver_fat_whr_diagnostics.csv'
+    - '{ukb_results}/liver_fat_whr_profiles.csv'
+    - '{ukb_results}/liver_fat_whr_predictions.csv'
+    - '{ukb_results}/liver_fat_whr_slope_contrasts.csv'
+    - '{ukb_results}/liver_fat_whr_profile_contrasts.csv'
+    - '{ukb_results}/liver_fat_whr_profile_differences.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_36:
+    script: scripts/36_WithinCohortContrasts.R
+    inputs:
+    - '{cross_cohort}/matched_cohort_contrasts.csv'
+    - '{ukb_results}/slope_reference_contrasts.csv'
+    - '{ALSPAC}'
+    - '{RS}'
+    - '{UKB}'
+    outputs:
+    - '{cross_cohort}/within_cohort_contrasts.rds'
+    - '{cross_cohort}/within_cohort_contrasts.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_37:
+    script: scripts/37_SlopeSupportSummary.R
+    inputs:
+    - '{ukb_results}/table_supp_08_cohorts.csv'
+    - '{ukb_results}/table_supp_09_slope_quantiles.csv'
+    - '{ALSPAC}'
+    - '{RS}'
+    - '{UKB}'
+    - '{ukb_processed}/lmmtabrec.rds'
+    - '{ukb_processed}/lmmtab2i.rds'
+    outputs:
+    - '{cross_cohort}/slope_support_summary.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_38:
+    script: scripts/38_LiverFatQuartileContrasts.R
+    inputs:
+    - '{ukb_processed}/slopebmregdf_2ilf.rds'
+    outputs:
+    - '{ukb_results}/liver_fat_quartile_contrasts.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_39:
+    script: scripts/39_StableContrastsCommonGrid.R
+    inputs:
+    - '{ukb_processed}/slopebmregdf_2ilf.rds'
+    - '{cross_cohort}/slope_support_summary.csv'
+    - '{ALSPAC}'
+    - '{RS}'
+    - '{UKB}'
+    outputs:
+    - '{cross_cohort}/stable_contrasts_common_grid.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_40:
+    script: scripts/40_StableConsistencyUkbRs.R
+    inputs:
+    - '{cross_cohort}/stable_contrasts_common_grid.csv'
+    outputs:
+    - '{cross_cohort}/stable_consistency_ukb_rs.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_41:
+    script: scripts/41_ResultsDigest.R
+    inputs:
+    - '{cross_cohort}/within_cohort_contrasts.csv'
+    - '{cross_cohort}/slope_support_summary.csv'
+    - '{cross_cohort}/stable_consistency_ukb_rs.csv'
+    - '{ukb_results}/liver_fat_quartile_contrasts.csv'
+    - '{ukb_results}/liver_fat_whr_tests.csv'
+    - '{ukb_results}/liver_fat_whr_profile_differences.csv'
+    - '{ukb_results}/liver_fat_whr_profile_contrasts.csv'
+    outputs:
+    - '{cross_cohort}/results_digest.txt'
+    threads: 1
+    mem_mb: 64000
+  stage_42:
+    script: scripts/42_PlotDesignSlopes.R
+    inputs:
+    - '{cross_cohort}/slope_support_summary.csv'
+    outputs:
+    - '{plots}/design_slope_distributions.png'
+    threads: 1
+    mem_mb: 64000
+  stage_43:
+    script: scripts/43_PlotWithinCohortContrasts.R
+    inputs:
+    - '{cross_cohort}/within_cohort_contrasts.csv'
+    outputs:
+    - '{plots}/within_cohort_contrasts.png'
+    threads: 1
+    mem_mb: 64000
+  stage_44:
+    script: scripts/44_PlotLiverFat.R
+    inputs:
+    - '{cross_cohort}/within_cohort_contrasts.csv'
+    - '{ukb_results}/liver_fat_quartile_contrasts.csv'
+    - '{ukb_results}/whr_trajectory_contrasts.csv'
+    outputs:
+    - '{plots}/liver_fat_quartile_contrasts.png'
+    threads: 1
+    mem_mb: 64000
+  stage_45:
+    script: scripts/45_PlotStableReference.R
+    inputs:
+    - '{cross_cohort}/stable_contrasts_common_grid.csv'
+    outputs:
+    - '{plots}/stable_reference.png'
+    threads: 1
+    mem_mb: 64000
+  stage_46:
+    script: scripts/46_FitWhrFollowup.R
+    inputs:
+    - '{ukb_processed}/ancestrytab.tsv'
+    - '{ukb_processed}/bmrec.tsv'
+    - '{ukb_raw}/WaistHip_Instance2.tsv'
+    - '{ukb_processed}/img2i.tsv'
+    - '{ukb_processed}/cvrec.tsv'
+    - '{ukb_processed}/cv2i.tsv'
+    - '{ukb_processed}/lmmtabrec.rds'
+    - '{ukb_processed}/lmmtab2i.rds'
+    outputs:
+    - '{ukb_processed}/whr_trajectory_models.rds'
+    threads: 1
+    mem_mb: 64000
+  stage_47:
+    script: scripts/47_SummarizeWhrFollowup.R
+    inputs:
+    - '{ukb_processed}/whr_trajectory_models.rds'
+    - '{ukb_results}/liver_fat_whr_tests.csv'
+    outputs:
+    - '{ukb_results}/whr_trajectory_summary.csv'
+    - '{ukb_results}/whr_trajectory_contrasts.csv'
+    - '{ukb_results}/liver_fat_whr_added_value.csv'
+    threads: 1
+    mem_mb: 64000
+  stage_48:
+    script: scripts/48_LiverFatSlopeWhrAdjustment.R
+    inputs:
+    - '{ukb_processed}/liver_fat_whr_models.rds'
+    - '{ukb_results}/liver_fat_whr_profiles.csv'
+    - '{ukb_results}/liver_fat_whr_slope_contrasts.csv'
+    outputs:
+    - '{ukb_results}/liver_fat_slope_whr_adjustment.csv'
+    threads: 1
+    mem_mb: 64000

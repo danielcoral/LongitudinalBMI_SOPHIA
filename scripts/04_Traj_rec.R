@@ -1,3 +1,4 @@
+source("src/project_setup.R")
 library(readr)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
@@ -8,10 +9,10 @@ library(ggplot2)
 
 options(repr.plot.res = 300)
 
-projfld <- "/ludc/Home/daniel_c/projects/DVA/LongitudinalBMI_SOPHIA"
+projfld <- getwd()
 
 bmilongrec <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "bmilongrec.tsv"),
+  file.path(project_paths$ukb_processed, "bmilongrec.tsv"),
   show_col_types = FALSE
 )
 
@@ -45,7 +46,7 @@ lmmtabrec <- lmmtabrec |>
 
 saveRDS(
   lmmtabrec,
-  file.path(projfld, "data", "UKB", "processed_data", "lmmtabrec.rds")
+  file.path(project_paths$ukb_processed, "lmmtabrec.rds")
 )
 
 average_trajectory <- lmmtabrec |>
@@ -79,7 +80,7 @@ individual_trajectory <- lmmtabrec |>
   mutate(across(where(is.numeric), \(x) round(x, digits = 2)))
 
 bmrec <- read_tsv(
-  file.path(projfld, "data", "UKB", "processed_data", "bmrec.tsv"),
+  file.path(project_paths$ukb_processed, "bmrec.tsv"),
   show_col_types = FALSE
 )
 
@@ -198,19 +199,17 @@ trajectory_text <- c(
 )
 write_lines(
   trajectory_text,
-  file.path(projfld, "data", "UKB", "results", "results_primary_trajectory.txt")
+  file.path(project_paths$ukb_results, "results_primary_trajectory.txt")
 )
 write_csv(
   average_trajectory,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_primary_average_trajectory.csv"
   )
 )
 write_csv(
   trajectory_correlations,
-  file.path(
-    projfld, "data", "UKB", "results",
+  file.path(project_paths$ukb_results,
     "table_primary_trajectory_correlations.csv"
   )
 )
@@ -221,7 +220,7 @@ trajectory_correlates_plot <- patchwork::wrap_plots(
   patchwork::plot_annotation(tag_levels = "A")
 
 ggsave(
-  file.path(projfld, "plots", "trajectory_correlates.png"),
+  file.path(project_paths$plots, "trajectory_correlates.png"),
   plot = trajectory_correlates_plot,
   width = 6, height = 9, units = "in", dpi = 300,
   bg = "white"
